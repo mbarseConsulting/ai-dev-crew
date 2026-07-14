@@ -1,0 +1,39 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Backups
+*.bak
+*.backup
+*.orig
+
+# Fichiers temporaires
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Logs
+*.log
+logs/
+
+# Notes personnelles (optionnel - décommenter si souhaité)
+# notes/personal/
+
+# Ignore contenu de local/ mais garde la structure
+local/*
+!local/.gitkeep
+!local/*/
+!local/**/.gitkeep
+
+# Configuration locale Claude Code
+.claude/settings.local.json

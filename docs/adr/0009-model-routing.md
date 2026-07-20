@@ -22,7 +22,7 @@ The SPEC had no cost doctrine. The operator runs the crew primarily on a persona
 ## Consequences
 
 - SPEC gains §8 (authoritative doctrine). The butler agent file carries a runtime copy of the table because the plugin is installed in client projects that do not contain this repo; SPEC §7's spec-first change process is the guard against drift between the two.
-- Enforcement is behavioral, consistent with ADR 0004: no `routing.yml`, no hooks, no consumption metering until the behavioral rule is shown to leak.
+- Enforcement is behavioral for now, following the deferred-enforcement pattern of [ADR 0006](./0006-deferred-hooks-and-worktrees.md) (explicit, tracked gaps): no `routing.yml`, no hooks, no consumption metering until the behavioral rule is shown to leak.
 - ADR 0011 (bounded self-improvement) is only activatable once this ADR is implemented — routing is what makes a self-improvement run viable on a subscription budget.
 
 ## Alternatives considered and rejected

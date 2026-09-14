@@ -32,6 +32,8 @@
 
 ## Part 2 — ADR 0010: watch → craft maintenance loop
 
+> **Ratified 2026-09-14** as [ADR 0010](../adr/0010-watch-craft-maintenance-loop.md). That ADR keeps this shape and settles the duplication objection raised just below, which [ADR 0013](../adr/0013-craft-skill-taxonomy.md) had made concrete: `SKILL.md` is normative, `best-practices.md` explains, and `SKILL.md` wins any disagreement.
+
 **Problem.** Searching the web for best practices at usage time is too costly, but a parallel `best-practices.md` would create a second home for rules that already live in `angular-craft` / `java-craft` / `python-craft` / `dev-conventions`, violating ADR 0008. The premise's §4 (local best-practices reference) and §8 (tech-watch agent) are one feature: the **update process** for the craft skills.
 
 **Shape.** Skills-first, like the rest of the crew: a `watch` skill carries the whole procedure; an agent shell is optional (a human can run the skill by hand in solo mode).

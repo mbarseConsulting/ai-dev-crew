@@ -59,6 +59,7 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | --- | --- | --- |
 | `dev-conventions` | Procedure | Git conventions, semver, changelog discipline, TDD baseline — cross-cutting |
 | `architecture` | Procedure | System design, ADRs, technology choices, repo layout |
+| `watch` | Maintenance | Periodic tech-watch pass keeping the craft skills from going stale: doctrinal diff against existing rules, digest, one PR per impacted skill |
 | `dev-loop` | Procedure | Development procedure: scope + acceptance criteria, project-command detection, develop/compile/test loop with a bounded repair budget, evidence-based reporting |
 | `testfix` | Procedure | Fixing already-failing tests: runner/scope detection, source-vs-test classification, the crew's one home for those rules |
 | `test-craft` | Procedure | Test strategy: unit/logic vs. end-to-end/DOM tier decisions, e2e scenario design, independent full-suite verification |
@@ -75,6 +76,8 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | `ws-craft` | Contracts | Socket vs SSE vs HTTP, typed versioned envelope, auth that outlives its token, backoff with jitter, resync over resume, heartbeat, bounded backpressure |
 
 Four families, indexed by **subject** because that is how work arrives. **Structure** and **Contracts** are transverse to language by construction — the entity/DTO/mapper discipline and URL style apply to the Java backend and the Node BFF alike — which is why they cannot live inside a language skill. Two distinct rules govern the catalog, and they answer different questions: a rule belongs to *the axis that stays true if you change technology*, and a file is *what fits a paste window and loads together*. See [ADR 0013](./adr/0013-craft-skill-taxonomy.md) and [`doctrine.md`](./doctrine.md).
+
+`watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site. Its loop is [ADR 0010](./adr/0010-watch-craft-maintenance-loop.md), and the authority split it depends on is stated there: `SKILL.md` is normative, `best-practices.md` explains, and where they disagree `SKILL.md` is right.
 
 Craft skills carry a `references/` directory: `best-practices.md` (the pattern and its reason — publishable, maintained by veille) and `house-rules.md` (names and choices specific to one employer — **gitignored**, with only `docs/templates/house-rules.template.md` committed). Skills marked **skeleton** above carry the structure and an explicit `À PEUPLER` marker rather than pretending to be complete.
 

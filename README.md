@@ -43,6 +43,7 @@ Quatre familles. L'inventaire à jour, avec le statut de chacune, est dans
 | **Langage / framework** | `java-craft` · `angular-craft` · `node-bff-craft` · `python-craft` | les idiomes d'une techno |
 | **Structure** | `layering-craft` · `persistence-craft` | ce qui traverse quelle couche, comment une entité est mappée |
 | **Contrats** | `api-rest-craft` · `kafka-craft` · `ws-craft` | la forme de ce qu'on expose |
+| **Maintenance** | `watch` | ce qui empêche les trois familles ci-dessus de pourrir |
 
 Les deux dernières familles sont **transverses au langage** : la discipline entity/DTO/mapper
 et le style d'URL valent autant côté Java que côté BFF Node. C'est pourquoi elles ne vivent
@@ -58,6 +59,15 @@ Les craft skills portent un dossier `references/` :
 | Committé | oui | **jamais** — gitignoré, seul le template l'est |
 
 `.claude/skills/persistence-craft/` sert de référence de format.
+
+Et `SKILL.md` fait autorité : `best-practices.md` explique, il ne légifère pas. Si les deux
+se contredisent, c'est le fonds qui a tort. C'est ce qui empêche les deux fichiers d'être
+deux domiciles pour une même règle — voir [ADR 0010](./docs/adr/0010-watch-craft-maintenance-loop.md).
+
+Ces fonds vieillissent, donc `watch` les entretient : une passe périodique qui ne retient
+d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest
+dans `docs/watch/`, et ouvre **une PR par skill impactée** — jamais de commit direct, parce
+que relire la PR est à la fois le garde-fou et le moment où on apprend.
 
 ## Les agents
 

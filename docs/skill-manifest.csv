@@ -6,6 +6,7 @@ code-quality,procedure,migre,non
 security-review,procedure,migre,non
 dev-conventions,procedure,migre,non
 architecture,procedure,migre,non
+watch,maintenance,peuple,oui
 java-craft,langage-framework,peuple,oui
 angular-craft,langage-framework,migre,oui
 node-bff-craft,langage-framework,peuple,oui

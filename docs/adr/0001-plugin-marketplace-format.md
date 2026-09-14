@@ -1,5 +1,7 @@
 # 0001 — Use the Claude Code plugin marketplace format over symlinks
 
+**Status:** superseded by [ADR 0012](./0012-claude-library-over-marketplace.md) — 2026-09-14. Its *context*, not merely its decision, was falsified: the client environment allows no plugin installation, and there is exactly one consumer, so neither "install into any client project" nor per-plugin selective installation ever applied. Kept as a record of what was decided and why.
+
 ## Context
 
 The crew needs to install into any client project, version each capability independently, and stay usable across many active client projects without tying every one of them to this exact machine and path. Ad hoc symlinks into a shared skills directory (the pattern used elsewhere in the author's toolkit) don't version independently, don't survive the source repo moving, and have no client-facing install story.

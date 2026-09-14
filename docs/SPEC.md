@@ -1,8 +1,8 @@
 # ai-dev-crew — SPEC
 
-**Status:** authoritative. This document is the source of truth for what the ai-dev-crew crew IS: its roles, its flow, its contracts. It is not a how-to — see [`README.md`](../README.md) for install and usage. Any future evolution of the crew starts by updating this file (and, if it represents a new decision, adding an entry under [`docs/adr/`](./adr/)) *before* plugin files change. Decisions recorded here are not re-litigated verbally.
+**Status:** authoritative. This document is the source of truth for what the ai-dev-crew crew IS: its roles, its flow, its contracts. It is not a how-to — see [`README.md`](../README.md) for install and usage. Any future evolution of the crew starts by updating this file (and, if it represents a new decision, adding an entry under [`docs/adr/`](./adr/)) *before* library files change. Decisions recorded here are not re-litigated verbally.
 
-Shipped structure this document describes: **7 plugins, 4 agents, 10 skills.**
+Shipped structure this document describes: **16 skills and 4 agents in `.claude/`, no plugins.** Packaging is a flat library discovered without installation — see [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
 
 ## Doctrine: the crew is skills + the file contract
 
@@ -12,7 +12,7 @@ Per [ADR 0008](./adr/0008-skills-first-doctrine.md): the skills catalog (§3) pl
 
 Four agents, one clear responsibility each. All domain, technology, and procedural knowledge lives in skills (§3), not in agent personas — see [ADR 0002](./adr/0002-thin-agents-fat-skills.md) and [ADR 0008](./adr/0008-skills-first-doctrine.md).
 
-### `agent-crew-butler` (plugin: `crew-core`)
+### `agent-crew-butler`
 
 - Entry point, running as the **main-session persona** in normal use — not a dispatched subagent. See [ADR 0007](./adr/0007-butler-topology-and-write-scope.md). Qualifies the user's need before dispatching anything. Not a shell (§ Doctrine, above) — its dispatch/gating behavior is genuinely agent-level, not extractable to a skill.
 - Dispatches `agent-crew-dev`, `agent-crew-tester`, and/or `agent-crew-critic` as subagents via its own `Agent` tool.
@@ -20,20 +20,20 @@ Four agents, one clear responsibility each. All domain, technology, and procedur
 - Runs a light sanity check on work returned by `agent-crew-dev` (did tests actually run? was the ADR/design respected?) before handing off to `agent-crew-tester` and/or `agent-crew-critic` for the thorough passes.
 - **Boundary:** never implements code (no `Edit`); never performs independent test verification or the formal review itself. See [ADR 0003](./adr/0003-butler-critic-separation.md).
 
-### `agent-crew-dev` (plugin: `crew-dev`)
+### `agent-crew-dev`
 
-- Generic, technology-agnostic developer **shell**. Instantiable multiple times in parallel on disjoint files. Its entire behavior is `dev-loop`, loaded by name, alongside `dev-conventions` and the matching craft skill(s) for the task's technology (`angular-craft`, `java-craft`, `python-craft`, ...).
+- Generic, technology-agnostic developer **shell**. Instantiable multiple times in parallel on disjoint files. Its entire behavior is `dev-loop`, loaded by name, alongside `dev-conventions` and the matching craft skill(s) for the task — which now means **one per axis touched**, not one per language: a language/framework skill, plus any Structure or Contracts skill the change crosses (§3, [ADR 0013](./adr/0013-craft-skill-taxonomy.md)). A change adding a REST endpoint over a new entity loads `java-craft`, `layering-craft`, `persistence-craft` and `api-rest-craft`.
 - Reads `docs/adr/` and `docs/design/` before implementing a handed-off feature, and runs the code/tests and reports the actual output as evidence before claiming a task done — all `dev-loop`'s procedure, not restated here. See [ADR 0005](./adr/0005-verification-loop.md).
 - When a test fails, `dev-loop` hands off to `testfix` (by name) for the source-vs-test classification and fix — the crew's one home for those rules.
 - **Boundary:** never grades its own work — that is `agent-crew-critic`'s job (or a human doing that review directly, in solo mode).
 
-### `agent-crew-tester` (plugin: `crew-tester`)
+### `agent-crew-tester`
 
 - Test-strategy and independent-verification **shell**. Its entire behavior is `test-craft`, loaded by name. Runs as a fresh instance, independent of whichever `agent-crew-dev` instance implemented the change under test — the same fresh-eyes principle behind the butler/critic separation (ADR 0003).
 - Decides unit/logic-tier vs. end-to-end/DOM-tier placement for a piece of behavior, designs missing end-to-end scenarios, and independently runs the **full** test suite (not just the author's targeted run) as its verification step.
 - **Boundary:** never fixes a failing test itself — hands off to `testfix` (by name) or says so; never performs the formal quality/security gate — that is `agent-crew-critic`'s job.
 
-### `agent-crew-critic` (plugin: `crew-critic`)
+### `agent-crew-critic`
 
 - Quality and security guardian **shell**. Fresh instance per review, with no memory of having briefed the work under review. Its entire review content is `code-quality` and `security-review`, loaded by name as lenses (or a single lens, in parallel-review mode); what the agent adds beyond the skills is dispatch-specific coordination — the lens-default rule and, in parallel mode, which instance writes the merged report.
 - Checks conformance to `docs/adr/` and harmony with existing project practice — via `code-quality`'s own MUST, not restated here.
@@ -41,32 +41,42 @@ Four agents, one clear responsibility each. All domain, technology, and procedur
 
 ## 2. Canonical flow
 
-**Topology:** `agent-crew-butler` runs as the main-session persona, not as a dispatched subagent, in normal operation (see [ADR 0007](./adr/0007-butler-topology-and-write-scope.md)). A `crew.sh` kickoff starts the session already in the butler's role — the prompt instructs the session to *act as* the butler, it does not dispatch `agent-crew-butler` through the `Agent` tool. The butler then uses its own `Agent` tool to dispatch `agent-crew-dev`, `agent-crew-tester`, and `agent-crew-critic` as subagents. This is what gives the butler a real, iterative conversational channel with the user — a dispatched subagent has none.
+**Topology:** `agent-crew-butler` runs as the main-session persona, not as a dispatched subagent, in normal operation (see [ADR 0007](./adr/0007-butler-topology-and-write-scope.md)). A session enters the butler's role by being told to *act as* the butler; `agent-crew-butler` is not dispatched through the `Agent` tool. (`scripts/crew.sh` used to perform this kickoff and is currently inoperative — it was built on plugin installation, removed by [ADR 0012](./adr/0012-claude-library-over-marketplace.md).) The butler then uses its own `Agent` tool to dispatch `agent-crew-dev`, `agent-crew-tester`, and `agent-crew-critic` as subagents. This is what gives the butler a real, iterative conversational channel with the user — a dispatched subagent has none.
 
 ```
-user ↔ agent-crew-butler → agent-crew-dev ×N (craft skills) → [agent-crew-tester, when installed] → agent-crew-critic → user
+user ↔ agent-crew-butler → agent-crew-dev ×N (craft skills) → agent-crew-tester → agent-crew-critic → user
 ```
 
-Every arrow is a user-triggered step; phases never auto-chain. The butler enforces an explicit user gate between an architecture/design decision, implementation, and the critic's formal gate. After `agent-crew-dev` returns, the butler runs its light sanity check (§1) — reading the dev report directly from the dispatch result, not from a file — before that user gate; `agent-crew-tester`'s thorough, independent full-suite verification (when `crew-tester` is installed) and `agent-crew-critic`'s formal gate are the two distinct checkpoints described in [ADR 0003](./adr/0003-butler-critic-separation.md), both fresh instances independent of the `agent-crew-dev` instance that implemented the change. The one exception to the sequential flow is parallel review: two `agent-crew-critic` instances (quality lens / security lens) run concurrently via agent teams and challenge each other's findings, and the quality-lens instance alone writes the merged report.
+Every arrow is a user-triggered step; phases never auto-chain. The butler enforces an explicit user gate between an architecture/design decision, implementation, and the critic's formal gate. After `agent-crew-dev` returns, the butler runs its light sanity check (§1) — reading the dev report directly from the dispatch result, not from a file — before that user gate; `agent-crew-tester`'s thorough, independent full-suite verification and `agent-crew-critic`'s formal gate are the two distinct checkpoints described in [ADR 0003](./adr/0003-butler-critic-separation.md), both fresh instances independent of the `agent-crew-dev` instance that implemented the change. The one exception to the sequential flow is parallel review: two `agent-crew-critic` instances (quality lens / security lens) run concurrently via agent teams and challenge each other's findings, and the quality-lens instance alone writes the merged report.
 
-Solo mode runs the identical sequence by hand: `dev-loop` (+ craft skills) → `test-craft` → `code-quality` + `security-review`, loaded directly in a plain session, no agent dispatch at all. Same skills, same order, same result — see the Doctrine above.
+Solo mode runs the identical sequence by hand: `dev-loop` (+ craft skills) → `test-craft` → `code-quality` + `security-review`, loaded directly in a plain session, no agent dispatch at all. Same skills, same order, same result — see the Doctrine above and §9, which states what solo mode does *not* reproduce: isolation and tool restriction.
 
-For the exhaustive picture — every tool allowlist, the full file contract as diagram edges, and both execution modes side by side — see ["How it all fits together"](../README.md#how-it-all-fits-together) in the README; this section stays the authoritative text, the README diagram illustrates it.
+Tool allowlists are in §6, the file contract in §4, and the two consumption modes in §9.
 
 ## 3. Skills-by-work-type catalog
 
-| Skill | Plugin | Work type |
+| Skill | Family | Work type |
 | --- | --- | --- |
-| `dev-conventions` | `crew-core` | Git conventions, semver, changelog discipline, TDD baseline — cross-cutting |
-| `architecture` | `crew-core` | System design, ADRs, technology choices, repo layout |
-| `dev-loop` | `crew-dev` | Development procedure: scope + acceptance criteria, project-command detection, develop/compile/test loop with a bounded repair budget, evidence-based reporting |
-| `testfix` | `crew-dev` | Fixing already-failing tests: runner/scope detection, source-vs-test classification, the crew's one home for those rules |
-| `test-craft` | `crew-tester` | Test strategy: unit/logic vs. end-to-end/DOM tier decisions, e2e scenario design, independent full-suite verification |
-| `code-quality` | `crew-critic` | Correctness, reuse, test coverage, convention compliance, `docs/adr/` conformance |
-| `security-review` | `crew-critic` | OWASP Top 10, secrets handling, dependency audit, authz patterns |
-| `angular-craft` | `crew-front-angular` | Angular/TypeScript/RxJS front-end conventions, accessibility, Vitest-vs-Cypress test-tier guidance |
-| `java-craft` | `crew-back-java` | Java/Spring Boot conventions |
-| `python-craft` | `crew-back-python` | Python/FastAPI conventions |
+| `dev-conventions` | Procedure | Git conventions, semver, changelog discipline, TDD baseline — cross-cutting |
+| `architecture` | Procedure | System design, ADRs, technology choices, repo layout |
+| `dev-loop` | Procedure | Development procedure: scope + acceptance criteria, project-command detection, develop/compile/test loop with a bounded repair budget, evidence-based reporting |
+| `testfix` | Procedure | Fixing already-failing tests: runner/scope detection, source-vs-test classification, the crew's one home for those rules |
+| `test-craft` | Procedure | Test strategy: unit/logic vs. end-to-end/DOM tier decisions, e2e scenario design, independent full-suite verification |
+| `code-quality` | Procedure | Correctness, reuse, test coverage, convention compliance, `docs/adr/` conformance |
+| `security-review` | Procedure | OWASP Top 10, secrets handling, dependency audit, authz patterns |
+| `angular-craft` | Language / framework | Angular/TypeScript/RxJS front-end conventions, accessibility |
+| `java-craft` | Language / framework | Java/Spring Boot conventions — **under-specified, to deepen** |
+| `node-bff-craft` | Language / framework | Node BFF: aggregation, resilience, secrets — **skeleton** |
+| `python-craft` | Language / framework | Python/FastAPI conventions — **parked**, not in the current stack |
+| `layering-craft` | Structure | Entity/DTO/mapper boundaries, package layout, what may cross which layer — **skeleton** |
+| `persistence-craft` | Structure | Entity mapping and identity, `@MappedSuperclass`, auditing, `equals`/`hashCode`, fetch strategy, transaction boundaries |
+| `api-rest-craft` | Contracts | Paths, verbs, status codes, error shape, pagination, OpenAPI style — **skeleton** |
+| `kafka-craft` | Contracts | Topic naming, keys and partitioning, idempotent consumers, DLQ, event schema evolution — **skeleton** |
+| `ws-craft` | Contracts | Socket lifecycle, message envelope, heartbeat, reconnection — **skeleton** |
+
+Four families, indexed by **subject** because that is how work arrives. **Structure** and **Contracts** are transverse to language by construction — the entity/DTO/mapper discipline and URL style apply to the Java backend and the Node BFF alike — which is why they cannot live inside a language skill. Two distinct rules govern the catalog, and they answer different questions: a rule belongs to *the axis that stays true if you change technology*, and a file is *what fits a paste window and loads together*. See [ADR 0013](./adr/0013-craft-skill-taxonomy.md) and [`doctrine.md`](./doctrine.md).
+
+Craft skills carry a `references/` directory: `best-practices.md` (the pattern and its reason — publishable, maintained by veille) and `house-rules.md` (names and choices specific to one employer — **gitignored**, with only `docs/templates/house-rules.template.md` committed). Skills marked **skeleton** above carry the structure and an explicit `À PEUPLER` marker rather than pretending to be complete.
 
 Skills are portable Markdown, self-contained, and referenced **by name only** — never by directory path — so they stay usable outside Claude Code and never cross-reference another skill's internals. `dev-loop`'s handoff to `testfix` for classify-and-fix rules is the canonical example of this pattern: `dev-loop` references `testfix` by name and does not restate its rules, which is exactly why those rules have exactly one home instead of two copies that can drift apart.
 
@@ -96,13 +106,15 @@ The crew **consumes** specifications; it does not author them. Upstream spec-pro
 - **Verification loop**: `dev-loop` requires execution evidence before claiming a task done. See [ADR 0005](./adr/0005-verification-loop.md).
 - **Single source of truth per rule** (skills-first): a rule lives in exactly one skill and is referenced by name elsewhere, never duplicated — `testfix`'s classify-and-fix rules being the concrete example other skills point to rather than restate. See [ADR 0008](./adr/0008-skills-first-doctrine.md).
 - **Model routing**: the butler passes an explicit `model` in every dispatch per the §8 table; behavioral rule, no mechanical enforcement. See [ADR 0009](./adr/0009-model-routing.md).
-- **Deferred to v2.1**: plugin-shipped enforcement hooks and a worktree mode for `crew.sh`. See [ADR 0006](./adr/0006-deferred-hooks-and-worktrees.md).
+- **Deferred**: path-scoped enforcement hooks and a worktree mode for parallel `agent-crew-dev` instances. The hooks were previously framed as plugin-shipped; with the plugin format gone ([ADR 0012](./adr/0012-claude-library-over-marketplace.md)) they would ship as project settings instead. Still deferred, not redesigned. See [ADR 0006](./adr/0006-deferred-hooks-and-worktrees.md).
 
 ## 7. Change process
 
-Any change to the crew's roles, flow, or contracts starts with a PR that updates this file and, if it represents a new decision, adds an ADR under `docs/adr/`. Code and plugin files follow from the updated spec — never the other way around.
+Any change to the crew's roles, flow, or contracts starts with a PR that updates this file and, if it represents a new decision, adds an ADR under `docs/adr/`. Library files follow from the updated spec — never the other way around.
 
 ## 8. Model routing per role
+
+**Scope:** this section applies only where the model is selectable — that is, harness mode (§9). Where the model is imposed and is not Claude, no routing table applies, no strong-model review gate exists, and the checklists carry the whole load. Narrowed by [ADR 0012](./adr/0012-claude-library-over-marketplace.md).
 
 Per [ADR 0009](./adr/0009-model-routing.md), dispatch-time model choice is doctrine, not accident. Defaults (overridable per project — see below):
 
@@ -116,4 +128,17 @@ Per [ADR 0009](./adr/0009-model-routing.md), dispatch-time model choice is doctr
 
 The butler passes the model **explicitly in every `Agent` dispatch** — `model:` frontmatter is never relied on. When `agent-crew-dev` exhausts `dev-loop`'s bounded repair budget, the butler may re-dispatch the task once on the strong model with the failure report as context (advisor escalation); no agent self-escalates. A `model-routing` section in the client project's `CLAUDE.md` overrides any default; an unavailable model falls back to the session model, reported to the user, never silently. In solo mode the table is a per-phase recommendation — same table, human choice.
 
-The butler agent file carries a runtime copy of this table (the plugin ships to client projects without this repo); this section is the authoritative version, and §7's spec-first process is the guard against drift.
+The butler agent file carries a runtime copy of this table (it is read in projects that do not contain this repo); this section is the authoritative version, and §7's spec-first process is the guard against drift.
+
+## 9. Consumption modes
+
+The library is the product; agents are a convenience. Per [ADR 0012](./adr/0012-claude-library-over-marketplace.md) it is consumed two ways, both first-class.
+
+**Harness mode.** Claude Code discovers `.claude/skills/` and `.claude/agents/` with no installation; symlinking into `~/.claude/` makes them available across projects. Agent dispatch, tool allowlists (§6) and model routing (§8) all apply here, and only here.
+
+**Paste mode.** No harness, no agents, an imposed model: the relevant `SKILL.md` is opened and pasted into the conversation. This is the mode the current engagement runs in, and it sets two hard constraints:
+
+- **File size is a contract.** A `SKILL.md` that does not fit a paste window is unusable regardless of how coherent it is — this is the granularity rule of [ADR 0013](./adr/0013-craft-skill-taxonomy.md), not a style preference.
+- **Cross-references by name are dead links.** [ADR 0008](./adr/0008-skills-first-doctrine.md)'s "reference by name, never restate" assumes a harness able to load the named target; a bare conversation has only what it was given. The single-source-of-truth rule is unchanged — entry-point skills additionally declare at the top what must be pasted alongside them.
+
+Paste mode has no agents, therefore no isolation and no tool restriction: nothing mechanically prevents the model from grading its own work. The separations of §1 survive there only as discipline held by the operator — running `test-craft` and the review lenses as deliberately separate passes, against the acceptance checklist, rather than as a continuation of the implementation.

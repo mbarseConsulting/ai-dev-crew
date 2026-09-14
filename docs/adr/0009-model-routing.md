@@ -1,6 +1,6 @@
 # ADR 0009 — Model routing per role
 
-**Status:** accepted — 2026-07-19
+**Status:** accepted — 2026-07-19. **Scope narrowed by [ADR 0012](./0012-claude-library-over-marketplace.md) — 2026-09-14:** this ADR applies only where the model is selectable. In the enterprise environment the model is imposed and not Claude, so no routing table applies there and no strong-model gate exists — the checklists carry the whole load instead. See §8 of the SPEC.
 
 ## Context
 

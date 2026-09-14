@@ -1,6 +1,6 @@
 # 0010 — Watch → craft maintenance loop
 
-**Status:** accepted — 2026-09-14. Shape established in [`docs/design/2026-07-18-routing-watch-selfimprove-design.md`](../design/2026-07-18-routing-watch-selfimprove-design.md) Part 2; this ADR ratifies it and settles the one question that design left open.
+**Status:** accepted — 2026-09-14. **Amended the same day by [ADR 0014](./0014-activity-first-skill-agent-pattern.md):** the normative/explanatory asymmetry below is unchanged, but it is now carried by two *sections* of one reference file (`## Règles` / `## Pourquoi`) rather than by two files (`SKILL.md` / `best-practices.md`). Read every mention of those filenames accordingly. Shape established in [`docs/design/2026-07-18-routing-watch-selfimprove-design.md`](../design/2026-07-18-routing-watch-selfimprove-design.md) Part 2; this ADR ratifies it and settles the one question that design left open.
 
 ## Context
 

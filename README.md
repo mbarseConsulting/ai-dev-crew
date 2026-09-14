@@ -34,40 +34,36 @@ faut coller avec eux.
 
 ## Les skills
 
-Quatre familles. L'inventaire à jour, avec le statut de chacune, est dans
-[`docs/skill-manifest.csv`](./docs/skill-manifest.csv).
+Cinq, indexées par **activité** — parce que l'activité est la seule chose que tu connaisses au moment où tu tapes la commande. Quelle techno tu touches se découvre *pendant*, donc ça se route, ça ne se tape pas.
 
-| Famille | Skills | Ce qu'elles décident |
+| Commande | Quand | Ce qu'elle porte |
 | --- | --- | --- |
-| **Procédure** | `dev-loop` · `testfix` · `test-craft` · `code-quality` · `security-review` · `dev-conventions` · `architecture` | comment on travaille |
-| **Langage / framework** | `java-craft` · `angular-craft` · `node-bff-craft` · `python-craft` | les idiomes d'une techno |
-| **Structure** | `layering-craft` · `persistence-craft` | ce qui traverse quelle couche, comment une entité est mappée |
-| **Contrats** | `api-rest-craft` · `kafka-craft` · `ws-craft` | la forme de ce qu'on expose |
-| **Maintenance** | `watch` | ce qui empêche les trois familles ci-dessus de pourrir |
+| `/crew-dev` | implémenter ou corriger du code | la boucle dev, la table de détection, 4 personas, 10 références |
+| `/crew-review` | faire passer un gate formel | la procédure de revue, lentilles qualité et sécurité |
+| `/crew-test` | un test est rouge, ou il faut vérifier indépendamment | critère de tier, scénarios, suite complète, testfix |
+| `/architecture` | une décision a de vrais arbitrages | discipline ADR, alternatives, réversibilité |
+| `/watch` | les références risquent de vieillir | diff doctrinal, digest, une PR par fichier impacté |
 
-Les deux dernières familles sont **transverses au langage** : la discipline entity/DTO/mapper
-et le style d'URL valent autant côté Java que côté BFF Node. C'est pourquoi elles ne vivent
-pas dans `java-craft`.
+La composition est un **graphe**, pas un arbre — quatre arêtes, aucune n'excluant les autres :
 
-Les craft skills portent un dossier `references/` :
+```
+/crew-dev ─── skill
+│
+├─ ses références          conventions · layering · api-rest
+│                          persistence · kafka · ws     ← chargées selon le contexte
+│
+└─ charge  agent-java ─── persona
+      ├─ ses références    java-spring · persistence · kafka · ws
+      └─ peut appeler      /crew-test · /architecture
+```
 
-| | `best-practices.md` | `house-rules.md` |
-| --- | --- | --- |
-| Répond à | quoi et pourquoi | avec quoi ici |
-| Source | veille, doc officielle | lecture de la codebase de l'employeur |
-| Durée de vie | toute la carrière | meurt avec le poste |
-| Committé | oui | **jamais** — gitignoré, seul le template l'est |
+Les références se chargent **par contexte**, jamais par défaut : tu touches un DTO → `layering`, une entité → `persistence`, un endpoint → `api-rest`. La détection se fait sur des faits observables — extensions, fichiers de build, annotations — pas sur un jugement.
 
-`.claude/skills/persistence-craft/` sert de référence de format.
+Une référence fusionnée porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique, et en cas de désaccord c'est `## Règles` qui a raison.**
 
-Et `SKILL.md` fait autorité : `best-practices.md` explique, il ne légifère pas. Si les deux
-se contredisent, c'est le fonds qui a tort. C'est ce qui empêche les deux fichiers d'être
-deux domiciles pour une même règle — voir [ADR 0010](./docs/adr/0010-watch-craft-maintenance-loop.md).
+`house-rules.md` — les noms et choix propres à l'employeur — est **gitignoré**. Seul `docs/templates/house-rules.template.md` est committé.
 
-Ces fonds vieillissent, donc `watch` les entretient : une passe périodique qui ne retient
-d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest
-dans `docs/watch/`, et ouvre **une PR par skill impactée** — jamais de commit direct, parce
-que relire la PR est à la fois le garde-fou et le moment où on apprend.
+Et `/watch` entretient tout ça : une passe périodique qui ne retient d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest dans `docs/watch/`, et ouvre **une PR par fichier impacté** — jamais de commit direct, parce que relire la PR est à la fois le garde-fou et le moment où on apprend.
 
 ## Les agents
 
@@ -79,7 +75,8 @@ par ce qu'il n'a pas vu :
 | `agent-crew-butler` | orchestration et gates utilisateur — non réductible à une skill ([ADR 0008](./docs/adr/0008-skills-first-doctrine.md)) |
 | `agent-crew-critic` | contexte vierge + aucun `Edit` : il ne peut pas réécrire ce qu'il relit |
 | `agent-crew-tester` | instance fraîche, indépendante de qui a écrit le code |
-| `agent-crew-dev` | parallélisme sur fichiers disjoints |
+| `agent-crew-dev` | il a lu la table de détection, donc il sait quelle persona dispatcher |
+| `agent-java` · `agent-angular` · `agent-node-bff` · `agent-python` | shells vers les personas : un contexte isolé par techno, dispatchables en parallèle sur fichiers disjoints |
 
 Coordination par **fichiers**, jamais par conversation entre agents, avec une validation
 utilisateur entre chaque phase :
@@ -116,21 +113,28 @@ Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitra
 ```
 ai-dev-crew/
 ├── .claude/
-│   ├── skills/<nom>/SKILL.md [+ references/]
-│   └── agents/agent-crew-*.md
+│   ├── skills/
+│   │   ├── crew-dev/      SKILL.md · agents/agent-{java,angular,node-bff,python}.md
+│   │   │                  references/{conventions,layering,api-rest,persistence,
+│   │   │                              kafka,ws,java-spring,node-bff,angular-patterns}.md
+│   │   ├── crew-review/   SKILL.md · references/{code-quality,security-review}.md
+│   │   ├── crew-test/     SKILL.md · references/testfix.md
+│   │   ├── architecture/  SKILL.md
+│   │   └── watch/         SKILL.md · references/sources.md
+│   └── agents/            4 rôles (butler, dev, tester, critic)
+│                          + 4 shells techno liés aux personas
 ├── docs/
 │   ├── SPEC.md · doctrine.md · skill-manifest.csv
-│   ├── adr/ · design/ · plans/ · reviews/ · templates/
+│   └── adr/ · design/ · plans/ · reviews/ · templates/ · watch/
 ├── scripts/
 ├── CHANGELOG.md · CONTRIBUTING.md · README.md
-└── .attic/            vestiges de l'ère plugin, gitignoré
+└── .attic/                vestiges de l'ère plugin, gitignoré
 ```
 
 ## Chantiers ouverts
 
 Migration structurelle faite, alignement doctrinal en cours :
 
-- `docs/SPEC.md` §1 et §3 décrivent encore une organisation en plugins
 - [ADR 0001](./docs/adr/0001-plugin-marketplace-format.md) est falsifié (son contexte suppose une installation chez le client) et doit être remplacé ; [ADR 0009](./docs/adr/0009-model-routing.md) ne vaut qu'en local, là où le modèle se choisit
 - `scripts/crew.sh` et `scripts/crew-doctor.sh` sont bâtis sur l'installation de plugins : inopérants en l'état
 - `angular-craft` recopie les règles de tier de `test-craft` — une seule doit les porter

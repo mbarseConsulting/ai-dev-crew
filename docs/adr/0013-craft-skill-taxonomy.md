@@ -1,6 +1,6 @@
 # 0013 — Craft skills are indexed by subject, on two axes, with origin split inside
 
-**Status:** accepted — 2026-09-14.
+**Status:** accepted — 2026-09-14. **Amended the same day by [ADR 0014](./0014-activity-first-skill-agent-pattern.md):** the four families and both arbitration rules below still govern, but one level down — they organise `crew-dev/references/`, not the top-level skill namespace. Exposing each knowledge domain as a skill the operator must name was the error; the taxonomy itself was not.
 
 ## Context
 

@@ -9,48 +9,48 @@
 >
 > Trois passes consécutives sans rien produire pour un flux = signal de révision.
 
-## Java — `java-craft`
+## Java — `agent-java`
 
 - [JDK release notes](https://www.oracle.com/java/technologies/javase/jdk-relnotes-index.html)
 - [JEP index](https://openjdk.org/jeps/0) — filtrer sur `Closed/Delivered`
 - [Spring Boot release notes (wiki)](https://github.com/spring-projects/spring-boot/wiki)
 - [Spring Blog](https://spring.io/blog)
 
-## Persistance — `persistence-craft`
+## Persistance — `references/persistence.md`
 
 - [Hibernate — in.relation.to](https://in.relation.to/)
 - [Spring Data JPA reference](https://docs.spring.io/spring-data/jpa/reference/)
 
-## Angular — `angular-craft`
+## Angular — `agent-angular`
 
 - [Angular blog](https://blog.angular.dev/)
 - [Angular releases (GitHub)](https://github.com/angular/angular/releases)
 
-## Node / BFF — `node-bff-craft`
+## Node / BFF — `agent-node-bff`
 
 - [Node.js changelog](https://github.com/nodejs/node/blob/main/CHANGELOG.md)
 - [Node.js release schedule](https://github.com/nodejs/release#release-schedule) — fins de support
 
-## API REST — `api-rest-craft`
+## API REST — `references/api-rest.md`
 
 - [RFC Editor — nouveaux RFC HTTP](https://www.rfc-editor.org/search/rfc_search.php)
 - [OpenAPI Specification releases](https://github.com/OAI/OpenAPI-Specification/releases)
 
-## Kafka — `kafka-craft`
+## Kafka — `references/kafka.md`
 
 - [Apache Kafka release notes](https://kafka.apache.org/downloads)
 - [Confluent blog](https://www.confluent.io/blog/)
 
-## WebSocket — `ws-craft`
+## WebSocket — `references/ws.md`
 
 - [MDN WebSockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 - [RFC Editor — WebSocket](https://www.rfc-editor.org/search/rfc_search.php)
 
-## Python — `python-craft` *(parqué : hors périmètre tant que la skill l'est)*
+## Python — `agent-python` *(parqué : hors périmètre tant que la skill l'est)*
 
 ## Sans flux déclaré
 
-Une craft skill sans flux ici ne peut pas être veillée. À ce jour :
+Une persona ou une référence sans flux ici ne peut pas être veillée. À ce jour :
 
-- `angular-craft` a des flux mais un `best-practices.md` vide — il n'y a rien à maintenir
+- `agent-angular` a des flux mais un `best-practices.md` vide — il n'y a rien à maintenir
   tant qu'il n'est pas peuplé.

@@ -2,7 +2,7 @@
 
 **Status:** authoritative. This document is the source of truth for what the ai-dev-crew crew IS: its roles, its flow, its contracts. It is not a how-to — see [`README.md`](../README.md) for install and usage. Any future evolution of the crew starts by updating this file (and, if it represents a new decision, adding an entry under [`docs/adr/`](./adr/)) *before* library files change. Decisions recorded here are not re-litigated verbally.
 
-Shipped structure this document describes: **16 skills and 4 agents in `.claude/`, no plugins.** Packaging is a flat library discovered without installation — see [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
+Shipped structure this document describes: **5 skills, 4 technology personas and 8 agents in `.claude/`, no plugins.** Packaging is a flat library discovered without installation — see [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
 
 ## Doctrine: the crew is skills + the file contract
 
@@ -55,31 +55,25 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 
 ## 3. Skills-by-work-type catalog
 
-| Skill | Family | Work type |
+| Skill | Invoked when | Carries |
 | --- | --- | --- |
-| `dev-conventions` | Procedure | Git conventions, semver, changelog discipline, TDD baseline — cross-cutting |
-| `architecture` | Procedure | System design, ADRs, technology choices, repo layout |
-| `watch` | Maintenance | Periodic tech-watch pass keeping the craft skills from going stale: doctrinal diff against existing rules, digest, one PR per impacted skill |
-| `dev-loop` | Procedure | Development procedure: scope + acceptance criteria, project-command detection, develop/compile/test loop with a bounded repair budget, evidence-based reporting |
-| `testfix` | Procedure | Fixing already-failing tests: runner/scope detection, source-vs-test classification, the crew's one home for those rules |
-| `test-craft` | Procedure | Test strategy: unit/logic vs. end-to-end/DOM tier decisions, e2e scenario design, independent full-suite verification |
-| `code-quality` | Procedure | Correctness, reuse, test coverage, convention compliance, `docs/adr/` conformance |
-| `security-review` | Procedure | OWASP Top 10, secrets handling, dependency audit, authz patterns |
-| `angular-craft` | Language / framework | Angular/TypeScript/RxJS front-end conventions, accessibility |
-| `java-craft` | Language / framework | Java 21 / Spring Boot 3.x: constructor injection and proxy semantics, records/sealed/`Optional`, configuration, centralised exception handling, SLF4J, Spring test slices |
-| `node-bff-craft` | Language / framework | Node BFF: aggregation without business rules, timeouts and deliberate degradation, safe retry, secrets and what never reaches the browser, correlation |
-| `python-craft` | Language / framework | Python/FastAPI conventions — **parked**, not in the current stack |
-| `layering-craft` | Structure | Where the persisted object stops, who maps out of it and when, one type per direction, dependency direction, layers that earn their existence |
-| `persistence-craft` | Structure | Entity mapping and identity, `@MappedSuperclass`, auditing, `equals`/`hashCode`, fetch strategy, transaction boundaries |
-| `api-rest-craft` | Contracts | Paths, verbs, status codes, one error envelope (RFC 9457), idempotency, versioning and compatibility, pagination, OpenAPI style |
-| `kafka-craft` | Contracts | Key choice and what ordering actually guarantees, delivery semantics, consumer idempotence, offsets and DLQ, event schema evolution, rebalance |
-| `ws-craft` | Contracts | Socket vs SSE vs HTTP, typed versioned envelope, auth that outlives its token, backoff with jitter, resync over resume, heartbeat, bounded backpressure |
+| `crew-dev` | implementing or fixing application code | the develop→compile→test→verify loop, the technology detection table, 4 personas, 10 references |
+| `crew-review` | a change must pass a formal gate | the review procedure; quality and security lenses as references |
+| `crew-test` | a test is red, or a change needs independent verification | the tier criterion, scenario design, full-suite verification, testfix |
+| `architecture` | a decision has real trade-offs and is expensive to reverse | ADR discipline, alternatives, reversibility |
+| `watch` | the library's references risk going stale | the doctrinal diff, the digest, one PR per impacted file |
 
-Four families, indexed by **subject** because that is how work arrives. **Structure** and **Contracts** are transverse to language by construction — the entity/DTO/mapper discipline and URL style apply to the Java backend and the Node BFF alike — which is why they cannot live inside a language skill. Two distinct rules govern the catalog, and they answer different questions: a rule belongs to *the axis that stays true if you change technology*, and a file is *what fits a paste window and loads together*. See [ADR 0013](./adr/0013-craft-skill-taxonomy.md) and [`doctrine.md`](./doctrine.md).
+The top-level unit is the **activity**, not the knowledge domain — because the activity is the only thing known at the moment the skill is invoked by hand ([ADR 0014](./adr/0014-activity-first-skill-agent-pattern.md)). What technology a task touches, and what it crosses into, is discovered *during* the work, so it is routed, not typed.
 
-`watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site. Its loop is [ADR 0010](./adr/0010-watch-craft-maintenance-loop.md), and the authority split it depends on is stated there: `SKILL.md` is normative, `best-practices.md` explains, and where they disagree `SKILL.md` is right.
+Composition is a graph with four edges, none exclusive: a skill loads its own references; a skill loads a persona; a persona loads its own references; either may call another skill by name. References load **by context** — a DTO loads `layering.md`, an entity loads `persistence.md` — never by default.
 
-Craft skills carry a `references/` directory: `best-practices.md` (the pattern and its reason — publishable, maintained by veille) and `house-rules.md` (names and choices specific to one employer — **gitignored**, with only `docs/templates/house-rules.template.md` committed). Skills marked **skeleton** above carry the structure and an explicit `À PEUPLER` marker rather than pretending to be complete.
+[ADR 0013](./adr/0013-craft-skill-taxonomy.md)'s four families and both arbitration rules still govern; they now organise `crew-dev/references/` rather than the top-level namespace.
+
+A merged reference carries two sections: **`## Règles` is normative, `## Pourquoi` explains, and where they disagree `## Règles` is right** — the same asymmetry [ADR 0010](./adr/0010-watch-craft-maintenance-loop.md) established between files.
+
+`watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site.
+
+`house-rules.md` — the employer's own names, packages and retained choices — is one **gitignored** file per skill, sectioned by domain; only `docs/templates/house-rules.template.md` is committed.
 
 Skills are portable Markdown, self-contained, and referenced **by name only** — never by directory path — so they stay usable outside Claude Code and never cross-reference another skill's internals. `dev-loop`'s handoff to `testfix` for classify-and-fix rules is the canonical example of this pattern: `dev-loop` references `testfix` by name and does not restate its rules, which is exactly why those rules have exactly one home instead of two copies that can drift apart.
 

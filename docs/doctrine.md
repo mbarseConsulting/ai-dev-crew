@@ -33,9 +33,17 @@ Les skills portent le comportement ; les agents ne portent que **contrainte** (`
 ADR 0004) et **isolation** (contexte vierge, ADR 0003). Un agent qui n'apporte ni l'une ni
 l'autre est un alias de sa liste de skills.
 
+## Composition — un graphe, pas un arbre
+
+Quatre arêtes, aucune n'excluant les autres ([ADR 0014](./adr/0014-activity-first-skill-agent-pattern.md)) :
+skill → ses références · skill → persona · persona → ses références · persona ou skill → autre skill.
+
+Le premier niveau est l'**activité**, jamais le domaine de connaissance : l'activité est la seule
+chose connue au moment de l'invocation. Le domaine se découvre pendant le travail, donc il se route.
+
 ## Contrat des deux fichiers de référence
 
-| | `references/best-practices.md` | `references/house-rules.md` |
+| | `## Pourquoi` (dans une référence) | `references/house-rules.md` |
 |---|---|---|
 | Répond à | quoi et pourquoi | avec quoi ici |
 | Source | veille, doc officielle | lecture de leur codebase |

@@ -62,7 +62,7 @@ Same objective/subjective split used elsewhere in the crew: the rules above are 
 - Converting an existing `instanceof` chain to a `sealed` hierarchy — a modelling decision, not a drive-by edit
 - Replacing working `@Value` injections with `@ConfigurationProperties`
 
-<!-- Customization hook — build tool, module layout, style guide and framework versions retenus : references/house-rules.md -->
+<!-- Customization hook — build tool, module layout, style guide and framework versions retenus : le profil projet (hors bibliothèque) -->
 
 ## FOCUS
 

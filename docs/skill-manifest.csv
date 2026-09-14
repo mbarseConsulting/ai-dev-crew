@@ -14,10 +14,10 @@ reference,api-rest,crew-dev,peuple,-
 reference,persistence,crew-dev,peuple,-
 reference,kafka,crew-dev,peuple,-
 reference,ws,crew-dev,peuple,-
+reference,iot,crew-dev,peuple,-
 reference,java-spring,crew-dev,peuple,-
 reference,node-bff,crew-dev,peuple,-
 reference,angular-patterns,crew-dev,vide,-
-reference,house-rules,crew-dev,gitignore,-
 reference,code-quality,crew-review,peuple,-
 reference,security-review,crew-review,peuple,-
 reference,testfix,crew-test,peuple,-

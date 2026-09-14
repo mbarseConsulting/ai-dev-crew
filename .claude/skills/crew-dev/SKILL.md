@@ -24,6 +24,7 @@ A task spanning several technologies loads each matching persona for its part; w
 
 Execute in order. Do not write code before Step 1's output exists. Do not skip steps.
 
+0. **Read the project profile, if one was supplied.** It is the only place that can declare the **domain** — nothing in a repository reveals that a project is IoT, or banking, or industrial — and the only place that names this project's own conventions. It lives outside this library, in the operator's own space; it is never stored here. No profile supplied → work from the universal references only, and say so in the report rather than assuming defaults.
 1. **Understand scope.** Parse the instructions (or the handed-off `docs/adr/`/`docs/design/` file). Extract target files, expected behavior, and an acceptance checklist — concrete, verifiable, one line per criterion. Keep it; it is re-checked in Step 8. If ambiguous, ask before proceeding.
 2. **Identify the technology from the table below and load its persona.** Detection is mechanical, not a judgement. No row matches → say so and stop; never continue on generic knowledge while pretending a persona was loaded.
 3. **Detect project commands.** Package manager from the lockfile (`package-lock.json` → npm, `yarn.lock` → yarn, `pnpm-lock.yaml` → pnpm, `bun.lockb` → bun; `pom.xml` → Maven, `build.gradle` → Gradle). Typecheck/build, test runner and linter from `package.json` scripts, then config files, then dependencies as a last resort. In a monorepo, scope every command to the relevant package. A command that cannot be determined is skipped and reported, never guessed.
@@ -38,6 +39,7 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 
 ### What you NEVER do
 
+- Never store a project profile, an employer's conventions, or anything project-specific inside this library — the library travels with its owner for life, a project does not
 - Never develop before Step 1's scope and acceptance checklist exist
 - Never skip the persona load, and never substitute your own knowledge of a technology for it
 - Never load a reference "just in case" — a reference is loaded when the context below is actually present in the change
@@ -68,8 +70,9 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 | An entity, a base class, a repository, a lazy/N+1 problem | `references/persistence.md` |
 | A producer, a consumer, a topic, an event payload | `references/kafka.md` |
 | A socket handler, a message envelope, reconnection | `references/ws.md` |
+| The profile declares the IoT domain | `references/iot.md` |
 
-The persona declares its own further references. Personas and references may also call another skill by name — `crew-test`, `crew-review`, `crew-architecture`.
+Domain references are declared by the project profile, never detected. Everything else above is detected from the change itself. The persona declares its own further references. Personas and references may also call another skill by name — `crew-test`, `crew-review`, `crew-architecture`.
 
 ## OUTPUT
 

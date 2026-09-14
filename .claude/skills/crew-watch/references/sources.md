@@ -41,6 +41,11 @@
 - [Apache Kafka release notes](https://kafka.apache.org/downloads)
 - [Confluent blog](https://www.confluent.io/blog/)
 
+## Domaine IoT — `references/iot.md`
+
+- [OASIS — MQTT](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html)
+- [OWASP — Internet of Things project](https://owasp.org/www-project-internet-of-things/)
+
 ## WebSocket — `references/ws.md`
 
 - [MDN WebSockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)

@@ -33,7 +33,7 @@
 - Changing an existing pagination style
 - Adding hypermedia (HATEOAS) where the clients do not use it
 
-<!-- Customization hook — stratégie de version, enveloppe d'erreur maison, style de pagination retenu : references/house-rules.md -->
+<!-- Customization hook — stratégie de version, enveloppe d'erreur maison, style de pagination retenu : le profil projet (hors bibliothèque) -->
 
 ### En un coup d'oeil
 
@@ -49,7 +49,7 @@
 
 > **Quoi et pourquoi.** Transverse au langage : ce qui suit vaut pour le backend Java comme
 > pour le BFF Node. Le préfixe de version, l'enveloppe d'erreur et le style de pagination
-> retenus vont dans `house-rules.md`, gitignoré.
+> retenus vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14
 >

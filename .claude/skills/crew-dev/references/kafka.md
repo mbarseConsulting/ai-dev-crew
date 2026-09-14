@@ -31,7 +31,7 @@
 - Moving to a transactional producer for exactly-once semantics
 - Changing a topic's partition count — it remaps every key, so previously ordered events can be reordered
 
-<!-- Customization hook — convention de nommage des topics, registry, politique de DLQ et de rejeu : references/house-rules.md -->
+<!-- Customization hook — convention de nommage des topics, registry, politique de DLQ et de rejeu : le profil projet (hors bibliothèque) -->
 
 ### En un coup d'oeil
 
@@ -45,7 +45,7 @@
 ## Pourquoi
 
 > **Quoi et pourquoi.** Le nommage des topics, le registry et la politique de rejeu retenus
-> vont dans `house-rules.md`, gitignoré.
+> vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14
 >

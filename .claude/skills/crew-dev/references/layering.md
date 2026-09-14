@@ -29,7 +29,7 @@
 - Introducing a mapping library where hand-written mappers are working
 - Splitting the use-case output from the response model where they currently coincide — a real divergence justifies it, an anticipated one does not
 
-<!-- Customization hook — noms des couches, découpage en packages, mapper retenu : references/house-rules.md -->
+<!-- Customization hook — noms des couches, découpage en packages, mapper retenu : le profil projet (hors bibliothèque) -->
 
 ### En un coup d'oeil
 
@@ -45,7 +45,7 @@
 
 > **Quoi et pourquoi.** Patterns vrais quel que soit l'employeur — et transverses au
 > langage : ce qui suit vaut côté Java comme côté BFF Node. Les noms de couches, le
-> découpage en packages et le mapper retenu vont dans `house-rules.md`, gitignoré.
+> découpage en packages et le mapper retenu vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14
 >

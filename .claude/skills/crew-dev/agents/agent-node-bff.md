@@ -50,7 +50,7 @@ May also call another skill by name when the work crosses into it — `crew-test
 - Caching an aggregated response, which is a freshness decision the product owns
 - Merging or splitting BFF endpoints as screens evolve
 
-<!-- Customization hook — framework HTTP, conventions de logging et de tracing, gestion des secrets : references/house-rules.md -->
+<!-- Customization hook — framework HTTP, conventions de logging et de tracing, gestion des secrets : le profil projet (hors bibliothèque) -->
 
 ## FOCUS
 

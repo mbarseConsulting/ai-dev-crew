@@ -29,7 +29,7 @@
 - Replacing the socket with Server-Sent Events when the flow is actually one-directional
 - Introducing a broker behind the socket so several server instances can fan out to the right sessions
 
-<!-- Customization hook — forme exacte de l'enveloppe, stratégie d'auth de handshake, intervalle de heartbeat : references/house-rules.md -->
+<!-- Customization hook — forme exacte de l'enveloppe, stratégie d'auth de handshake, intervalle de heartbeat : le profil projet (hors bibliothèque) -->
 
 ### En un coup d'oeil
 
@@ -43,7 +43,7 @@
 ## Pourquoi
 
 > **Quoi et pourquoi.** L'enveloppe exacte, la stratégie d'auth du handshake et l'intervalle
-> de heartbeat retenus vont dans `house-rules.md`, gitignoré.
+> de heartbeat retenus vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14
 >

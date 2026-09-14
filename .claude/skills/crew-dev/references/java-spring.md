@@ -1,7 +1,7 @@
 # java-spring — Java 21 / Spring Boot
 
 > **Quoi et pourquoi.** Patterns vrais quel que soit l'employeur. Les noms, versions et
-> choix retenus ici vont dans `house-rules.md`, qui est gitignoré.
+> choix retenus ici vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14 · Cible : Java 21 LTS / Spring Boot 3.x
 >

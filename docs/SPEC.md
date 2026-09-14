@@ -67,13 +67,15 @@ The top-level unit is the **activity**, not the knowledge domain — because the
 
 Composition is a graph with four edges, none exclusive: a skill loads its own references; a skill loads a persona; a persona loads its own references; either may call another skill by name. References load **by context** — a DTO loads `layering.md`, an entity loads `persistence.md` — never by default.
 
+**Technology is detected; the domain is declared** ([ADR 0015](./adr/0015-library-project-boundary-and-domain-axis.md)). `*.java` is an observable fact; nothing in a repository states that a project is IoT. The domain therefore comes from a **project profile** supplied by the operator — which is also the only reason such a profile needs to exist.
+
 [ADR 0013](./adr/0013-craft-skill-taxonomy.md)'s four families and both arbitration rules still govern; they now organise `crew-dev/references/` rather than the top-level namespace.
 
 A merged reference carries two sections: **`## Règles` is normative, `## Pourquoi` explains, and where they disagree `## Règles` is right** — the same asymmetry [ADR 0010](./adr/0010-watch-craft-maintenance-loop.md) established between files.
 
 `crew-watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site.
 
-`house-rules.md` — the employer's own names, packages and retained choices — is one **gitignored** file per skill, sectioned by domain; only `docs/templates/house-rules.template.md` is committed.
+**Nothing project- or employer-specific is stored in this library.** It travels with its owner for life; a project is disposable. The project profile — domain, stack, and this project's own names — lives in the operator's own space, outside this repository and outside the client's, and is pointed at, never contained. Only `docs/templates/project-profile.template.md` is committed.
 
 Skills are portable Markdown, self-contained, and referenced **by name only** — never by directory path — so they stay usable outside Claude Code and never cross-reference another skill's internals. `dev-loop`'s handoff to `testfix` for classify-and-fix rules is the canonical example of this pattern: `dev-loop` references `testfix` by name and does not restate its rules, which is exactly why those rules have exactly one home instead of two copies that can drift apart.
 

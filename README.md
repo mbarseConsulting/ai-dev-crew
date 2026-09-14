@@ -51,6 +51,7 @@ La composition est un **graphe**, pas un arbre — quatre arêtes, aucune n'excl
 │
 ├─ ses références          conventions · layering · api-rest
 │                          persistence · kafka · ws     ← chargées selon le contexte
+│                          iot                          ← domaine, déclaré par le profil
 │
 └─ charge  agent-java ─── persona
       ├─ ses références    java-spring · persistence · kafka · ws
@@ -61,7 +62,9 @@ Les références se chargent **par contexte**, jamais par défaut : tu touches u
 
 Une référence fusionnée porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique, et en cas de désaccord c'est `## Règles` qui a raison.**
 
-`house-rules.md` — les noms et choix propres à l'employeur — est **gitignoré**. Seul `docs/templates/house-rules.template.md` est committé.
+**Rien de projet ni d'employeur ne vit dans cette bibliothèque.** Elle se balade à vie ; un projet est jetable. Le **profil projet** — domaine, stack, noms maison — vit dans ton espace à toi, hors de ce dépôt et hors du dépôt client, et il est *pointé*, jamais *contenu*. Seul `docs/templates/project-profile.template.md` est committé.
+
+C'est aussi lui qui rend le domaine connaissable : **la techno se détecte, le domaine se déclare.** `*.java` est un fait observable ; rien dans une arborescence ne dit qu'un projet fait de l'IoT.
 
 Et `/crew-watch` entretient tout ça : une passe périodique qui ne retient d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest dans `docs/watch/`, et ouvre **une PR par fichier impacté** — jamais de commit direct, parce que relire la PR est à la fois le garde-fou et le moment où on apprend.
 

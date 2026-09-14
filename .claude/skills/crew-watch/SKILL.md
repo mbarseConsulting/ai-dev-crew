@@ -29,7 +29,7 @@ Execute in order. This is a maintenance skill for the library itself, never one 
 - Never change a rule without a cited source in the PR — an uncited craft-skill change is rejectable on sight, and is the one way a hallucinated finding could corrupt a reference the whole library trusts
 - Never commit directly to a persona or a reference: reviewing the PR is both the gate and the point, since that review is where the operator actually learns
 - Never introduce a MUST or NEVER into a `## Pourquoi` section — it explains, it does not legislate; where it and `## Règles` disagree, `## Règles` is right ([ADR 0010](../../../docs/adr/0010-watch-craft-maintenance-loop.md))
-- Never touch a `house-rules.md`: those are maintained by reading the employer's codebase, not by veille, and they are gitignored
+- Never touch a le **profil projet**: those are maintained by reading the employer's codebase, not by veille, and they are gitignored
 - Never widen the source list mid-run to chase a finding — note the gap in the digest and revise `references/sources.md` deliberately
 - Never report a finding as impacting a rule without naming the skill and quoting the rule
 - Do NOT apply this skill to implementing a change (`crew-dev`) or to reviewing one (`crew-review`)

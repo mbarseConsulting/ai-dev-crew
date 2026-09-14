@@ -1,7 +1,7 @@
 # node-bff — BFF Node.js
 
 > **Quoi et pourquoi.** Le framework HTTP, les conventions de logging/tracing et la gestion
-> des secrets retenus vont dans `house-rules.md`, gitignoré.
+> des secrets retenus vont dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14
 >

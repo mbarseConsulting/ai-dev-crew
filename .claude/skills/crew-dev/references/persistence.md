@@ -25,7 +25,7 @@
 - Never let a schema change ride along silently — flag it and stop, per `crew-dev`'s API/schema rule
 - Do NOT use these rules for which layer may see an entity, or to entity → DTO → mapper boundaries — that is `references/layering.md`
 
-<!-- Customization hook — les noms et signatures maison (classe de base, stratégie d'id, colonnes d'audit) vivent dans references/house-rules.md, jamais ici. -->
+<!-- Customization hook — les noms et signatures maison (classe de base, stratégie d'id, colonnes d'audit) vivent dans le profil projet (hors bibliothèque), jamais ici. -->
 
 ### En un coup d'oeil
 
@@ -40,7 +40,7 @@
 ## Pourquoi
 
 > **Quoi et pourquoi.** Patterns vrais quel que soit l'employeur. Ce qui est spécifique à
-> une boîte (noms de classes, packages, stratégie d'id retenue) va dans `house-rules.md`.
+> une boîte (noms de classes, packages, stratégie d'id retenue) va dans le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : 2026-09-14 · Cible : Spring Boot 3.x / Jakarta Persistence 3.x
 

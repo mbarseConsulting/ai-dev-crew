@@ -2,7 +2,7 @@
 
 > **Quoi et pourquoi.** Patterns vrais quel que soit l'employeur, maintenus par passe de
 > veille. Ce qui est spécifique à une boîte (noms, packages, choix retenus) va dans
-> `house-rules.md`, qui est gitignoré.
+> le **profil projet**, tenu hors de cette bibliothèque.
 >
 > Dernière passe de veille : —  ·  Statut : **à peupler**
 >

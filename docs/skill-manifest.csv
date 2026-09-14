@@ -8,10 +8,10 @@ dev-conventions,procedure,migre,non
 architecture,procedure,migre,non
 java-craft,langage-framework,peuple,oui
 angular-craft,langage-framework,migre,oui
-node-bff-craft,langage-framework,squelette,oui
+node-bff-craft,langage-framework,peuple,oui
 python-craft,langage-framework,parke,non
 layering-craft,structure,peuple,oui
 persistence-craft,structure,peuple,oui
 api-rest-craft,contrat,peuple,oui
-kafka-craft,contrat,squelette,oui
-ws-craft,contrat,squelette,oui
+kafka-craft,contrat,peuple,oui
+ws-craft,contrat,peuple,oui

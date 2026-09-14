@@ -66,13 +66,13 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | `security-review` | Procedure | OWASP Top 10, secrets handling, dependency audit, authz patterns |
 | `angular-craft` | Language / framework | Angular/TypeScript/RxJS front-end conventions, accessibility |
 | `java-craft` | Language / framework | Java 21 / Spring Boot 3.x: constructor injection and proxy semantics, records/sealed/`Optional`, configuration, centralised exception handling, SLF4J, Spring test slices |
-| `node-bff-craft` | Language / framework | Node BFF: aggregation, resilience, secrets — **skeleton** |
+| `node-bff-craft` | Language / framework | Node BFF: aggregation without business rules, timeouts and deliberate degradation, safe retry, secrets and what never reaches the browser, correlation |
 | `python-craft` | Language / framework | Python/FastAPI conventions — **parked**, not in the current stack |
 | `layering-craft` | Structure | Where the persisted object stops, who maps out of it and when, one type per direction, dependency direction, layers that earn their existence |
 | `persistence-craft` | Structure | Entity mapping and identity, `@MappedSuperclass`, auditing, `equals`/`hashCode`, fetch strategy, transaction boundaries |
 | `api-rest-craft` | Contracts | Paths, verbs, status codes, one error envelope (RFC 9457), idempotency, versioning and compatibility, pagination, OpenAPI style |
-| `kafka-craft` | Contracts | Topic naming, keys and partitioning, idempotent consumers, DLQ, event schema evolution — **skeleton** |
-| `ws-craft` | Contracts | Socket lifecycle, message envelope, heartbeat, reconnection — **skeleton** |
+| `kafka-craft` | Contracts | Key choice and what ordering actually guarantees, delivery semantics, consumer idempotence, offsets and DLQ, event schema evolution, rebalance |
+| `ws-craft` | Contracts | Socket vs SSE vs HTTP, typed versioned envelope, auth that outlives its token, backoff with jitter, resync over resume, heartbeat, bounded backpressure |
 
 Four families, indexed by **subject** because that is how work arrives. **Structure** and **Contracts** are transverse to language by construction — the entity/DTO/mapper discipline and URL style apply to the Java backend and the Node BFF alike — which is why they cannot live inside a language skill. Two distinct rules govern the catalog, and they answer different questions: a rule belongs to *the axis that stays true if you change technology*, and a file is *what fits a paste window and loads together*. See [ADR 0013](./adr/0013-craft-skill-taxonomy.md) and [`doctrine.md`](./doctrine.md).
 

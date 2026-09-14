@@ -1,11 +1,93 @@
 # ws-craft — fonds universel
 
-> **Quoi et pourquoi.** Patterns vrais quel que soit l'employeur, maintenus par passe de
-> veille. Ce qui est spécifique à une boîte (noms, packages, choix retenus) va dans
-> `house-rules.md`, qui est gitignoré.
+> **Quoi et pourquoi.** L'enveloppe exacte, la stratégie d'auth du handshake et l'intervalle
+> de heartbeat retenus vont dans `house-rules.md`, gitignoré.
 >
-> Dernière passe de veille : —  ·  Statut : **à peupler**
+> Dernière passe de veille : 2026-09-14
 >
-> Format de référence : voir `.claude/skills/persistence-craft/references/best-practices.md`
+> Les contrats HTTP sont dans `api-rest-craft`, les événements de broker dans `kafka-craft`.
+
+## 1. Socket, SSE ou HTTP : choisir avant de coder
+
+| Besoin | Choix | Pourquoi |
+|---|---|---|
+| Le client demande, le serveur répond | HTTP | cache, rejeu, outillage, débogage triviaux |
+| Le serveur pousse, le client écoute | **SSE** | reconnexion automatique intégrée, passe les proxys, bien plus simple |
+| Les deux sens, en continu, à faible latence | **WebSocket** | seul cas où le coût se justifie |
+
+Le coût d'un socket est réel : état de connexion par client, authentification qui ne suit
+plus le modèle requête/réponse, reconnexion à écrire, montée en charge multi-instance,
+absence de cache. Un flux unidirectionnel traité en WebSocket est presque toujours du SSE
+réécrit à la main, moins bien.
+
+## 2. Authentification et autorisation
+
+Un socket **survit à son jeton**. Une session ouverte le matin avec un token d'une heure est
+toujours ouverte l'après-midi : si l'autorisation n'est vérifiée qu'au handshake, une
+permission révoquée ne prend jamais effet.
+
+Donc : authentifier au handshake **et** revérifier l'autorisation sur tout message
+sensible. Prévoir aussi la fermeture côté serveur quand les droits changent.
+
+Et la diffusion : appartenir à une *room* ou à un *topic* est un mécanisme de **routage**,
+pas une décision de contrôle d'accès. Diffuser à une room sans vérifier chaque destinataire
+revient à déléguer l'autorisation à la structure de routage.
+
+## 3. Reconnexion : backoff **et** jitter
+
+Le backoff exponentiel seul ne suffit pas. Si le serveur a eu une micro-coupure, tous les
+clients se sont déconnectés **au même instant** ; avec le même backoff, ils se
+reconnectent tous au même instant, puis retentent ensemble. Une coupure d'une seconde
+devient une panne entretenue par ses propres clients.
+
+Le jitter — une part aléatoire dans le délai — est ce qui étale la reprise. Ce n'est pas un
+raffinement, c'est ce qui empêche le troupeau.
+
+## 4. Resynchroniser, pas reprendre
+
+Une reconnexion n'est pas la suite de la session précédente : des messages ont pu être émis
+pendant la coupure, et rien ne les a conservés. Deux stratégies :
+
+- **État courant** — au retour, le client redemande l'état complet et repart de là. Simple,
+  suffisant dans la plupart des cas.
+- **Numéro de séquence** — le client mémorise le dernier numéro reçu et le serveur rejoue à
+  partir de là. Plus fin, mais impose au serveur de conserver un tampon par session.
+
+Ce qui n'est jamais correct, c'est de supposer la continuité.
+
+## 5. Heartbeat
+
+Une connexion TCP peut être morte plusieurs minutes sans que ni l'un ni l'autre des côtés
+en soit informé — un NAT qui a expiré l'entrée, un boîtier intermédiaire qui a coupé, un
+client dont le réseau a disparu sans FIN. Les deux extrémités croient la session vivante :
+le serveur garde de la mémoire pour un client absent, le client attend des messages qui
+n'arriveront pas.
+
+Le ping/pong applicatif est la seule détection fiable. Il fixe aussi la borne haute du
+délai de détection d'une déconnexion.
+
+## 6. Backpressure
+
+Un client lent est un problème **serveur**. Si la file d'émission par connexion n'est pas
+bornée, un consommateur lent fait croître la mémoire du serveur jusqu'à l'incident, et il
+suffit d'un client sur un réseau dégradé.
+
+Borner la file, et décider explicitement du comportement quand elle se remplit : jeter les
+messages les plus anciens (acceptable pour un flux d'état où seul le dernier compte),
+fusionner (coalescing) si seule la valeur courante importe, ou fermer la connexion en
+laissant le client resynchroniser. Le choix dépend du flux — l'absence de choix, non.
+
+## 7. Plusieurs instances serveur
+
+Une session est attachée à **une** instance. Un événement produit sur une autre instance ne
+peut donc pas atteindre le client sans relais : un broker (Redis pub/sub, Kafka) auquel
+toutes les instances sont abonnées, chacune ne poussant qu'aux sessions qu'elle détient.
+Une architecture socket qui fonctionne en mono-instance et qu'on scale horizontalement sans
+ce relais perd des messages de façon apparemment aléatoire.
 
 ## Sources
+
+- [RFC 6455 — The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455.html)
+- [MDN — Writing WebSocket servers](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers)
+- [MDN — Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+- [AWS Architecture Blog — Exponential backoff and jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)

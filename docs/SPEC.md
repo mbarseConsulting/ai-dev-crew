@@ -68,9 +68,9 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | `java-craft` | Language / framework | Java 21 / Spring Boot 3.x: constructor injection and proxy semantics, records/sealed/`Optional`, configuration, centralised exception handling, SLF4J, Spring test slices |
 | `node-bff-craft` | Language / framework | Node BFF: aggregation, resilience, secrets — **skeleton** |
 | `python-craft` | Language / framework | Python/FastAPI conventions — **parked**, not in the current stack |
-| `layering-craft` | Structure | Entity/DTO/mapper boundaries, package layout, what may cross which layer — **skeleton** |
+| `layering-craft` | Structure | Where the persisted object stops, who maps out of it and when, one type per direction, dependency direction, layers that earn their existence |
 | `persistence-craft` | Structure | Entity mapping and identity, `@MappedSuperclass`, auditing, `equals`/`hashCode`, fetch strategy, transaction boundaries |
-| `api-rest-craft` | Contracts | Paths, verbs, status codes, error shape, pagination, OpenAPI style — **skeleton** |
+| `api-rest-craft` | Contracts | Paths, verbs, status codes, one error envelope (RFC 9457), idempotency, versioning and compatibility, pagination, OpenAPI style |
 | `kafka-craft` | Contracts | Topic naming, keys and partitioning, idempotent consumers, DLQ, event schema evolution — **skeleton** |
 | `ws-craft` | Contracts | Socket lifecycle, message envelope, heartbeat, reconnection — **skeleton** |
 

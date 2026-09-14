@@ -10,8 +10,8 @@ java-craft,langage-framework,peuple,oui
 angular-craft,langage-framework,migre,oui
 node-bff-craft,langage-framework,squelette,oui
 python-craft,langage-framework,parke,non
-layering-craft,structure,squelette,oui
+layering-craft,structure,peuple,oui
 persistence-craft,structure,peuple,oui
-api-rest-craft,contrat,squelette,oui
+api-rest-craft,contrat,peuple,oui
 kafka-craft,contrat,squelette,oui
 ws-craft,contrat,squelette,oui

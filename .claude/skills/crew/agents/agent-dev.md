@@ -7,7 +7,7 @@ description: "Developer: loads the techno file of the detected stack, implements
 
 ## ROLE
 
-The detection table, the reference table and the paste list live there, not here.
+The developer implements the change and its tests, and proves both with real command output. The detection table, the shared reference table and the paste list live in `SKILL.md`, not here.
 
 ## BEHAVIOR
 
@@ -19,10 +19,10 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 1. **Understand scope.** Parse the instructions (or the handed-off `docs/adr/` / `docs/design/` file). Extract target files, expected behavior, and an acceptance checklist — concrete, verifiable, one line per criterion. Keep it; it is re-checked in Step 8. If ambiguous, stop and report the open question — a launched agent cannot ask the user, only whoever briefed it can.
 2. **Load the techno file `SKILL.md`'s detection table chose.** Detection is mechanical, not a judgement. No row matches → say so and stop; never continue on generic knowledge while pretending a techno file was loaded.
 3. **Detect project commands.** Package manager from the lockfile (`package-lock.json` → npm, `yarn.lock` → yarn, `pnpm-lock.yaml` → pnpm, `bun.lockb` → bun; `pom.xml` → Maven, `build.gradle` → Gradle; `uv.lock` → uv, `poetry.lock` → poetry). Typecheck/build, test runner and linter from `package.json` scripts or the build file, then config files, then dependencies as a last resort. In a monorepo, scope every command to the relevant package. A command that cannot be determined is skipped and reported, never guessed.
-4. **Develop.** Follow existing patterns; surgical edits; respect existing imports, naming and structure; no new dependency unless the task explicitly requires one.
+4. **Develop.** Match the language and framework versions and the patterns already in use; surgical edits; respect existing imports, naming and structure; no new framework or major dependency unless the task explicitly requires one — otherwise flag it as a decision for the user.
 5. **Compile / typecheck.** Zero errors before moving on. Errors count against the repair budget. Warnings alone don't block — note them.
-6. **Write and run the tests.** Put each test in the tier its behavior belongs to (below), in the techno file's naming. Run the nearest tests first; escalate to the package's suite if the change touches shared code. No test infrastructure: note it, don't invent it mid-task. **When a test goes red**, apply `references/testfix.md`'s classification — decide whether the source or the test is wrong, then fix that one; never adjust a test to match code you have not verified.
-7. **Check the techno file's rules against the change.** Auto-fix violations of its mechanical rules in code touched this session; report-only for the subjective ones. Never rewrite otherwise-correct working code for style alone.
+6. **Write and run the tests.** Put each test in the tier its behavior belongs to (below), in the techno file's naming. Run the nearest tests first; escalate to the package's suite if the change touches shared code. No test infrastructure: note it, don't invent it mid-task. **When a test goes red**, apply `references/proc-testfix.md` Step 5's classification — decide whether the source or the test is wrong, then fix that one; never adjust a test to match code you have not verified. Its own verify loop does not apply here: each fix counts against this agent's repair budget.
+7. **Check the techno file's rules and the loaded shared references against the change.** Auto-fix violations of its mechanical rules in code touched this session; report-only for the subjective ones. Never rewrite otherwise-correct working code for style alone.
 8. **Final conformity — labeled as a self-check.** Re-read Step 1's checklist. Per criterion: done, partial, or not done, with explanation. Fix what is fixable within budget. This is your own read-through, never the formal gate: that is `--review`, run by someone who has not seen this work being written. Say so.
 9. **Report with evidence.** Attach the actual command output for every claim of success. No "should pass now."
 

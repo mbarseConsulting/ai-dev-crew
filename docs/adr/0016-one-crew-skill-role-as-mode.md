@@ -25,7 +25,7 @@ crew/
 └── references/   shared knowledge and agent-owned procedures
 ```
 
-**2. The flow is one line.** `/crew` detects the technology and picks the role — `agent-dev` by default. The router reads `agents/agent-dev.md`; the agent reads `technos/java.md`; the techno lists its references (`java-spring`, `api-rest`, `layering`, `persistence`…). The agent develops.
+**2. The flow is one line.** `/crew` detects the technology and picks the role — `agent-dev` by default. The router reads `agents/agent-dev.md`; the agent reads `technos/java.md`; the techno lists its own references (`java-spring`, `persistence`), and `SKILL.md`'s shared table adds the cross-stack ones the change's context calls for (`conventions`, `layering`, `api-rest`, `kafka`, `ws`, `iot`). The agent develops.
 
 | Flag | Agent |
 | --- | --- |
@@ -38,13 +38,13 @@ crew/
 
 **3. An agent is a role; a technology is a techno.** Technologies are no longer agents. A technology still gets its own context when the butler launches one `agent-dev` per technology, on disjoint files.
 
-**4. `-c` launches instead of reading.** The router reads the agent inline by default; `-c` launches it as a subagent. `.claude/agents/agent-{dev,tester,review,butler}.md` are launchable shells: they preload `crew` through `skills:`, point at the matching `crew/agents/` file, and carry the toolset (no `Agent` for dev, tester and review; no `Edit` for review and butler).
+**4. `-c` launches instead of reading.** The router reads the agent inline by default; `-c` launches it as a subagent — except the butler, which talks to the user and so always runs inline or as the whole session. `.claude/agents/agent-{dev,tester,review,butler}.md` are launchable shells: they preload `crew` through `skills:`, point at the matching `crew/agents/` file, and carry the toolset (no `Agent` for dev, tester and review; no `Edit` for review and butler).
 
 **5. One verb per role.** Only the butler launches other agents.
 
 **6. A skill names no other skill, without exception.** Composing `crew` with `crew-project` is an agent's job: `.claude/agents/agent-butler.md` preloads both.
 
-**7. Independence.** `-t` or `-r` in a conversation that already ran `-d` on the same change is labelled **"Self-check — not the gate"** and gives no verdict. A fresh conversation, or `-c`, avoids it.
+**7. Independence.** `-t` or `-r` in a conversation that wrote or briefed the same change (it ran `-d` or `-b` on it) is labelled **"Self-check — not the gate"** and gives no verdict. A fresh conversation, or `-c`, avoids it.
 
 **8. Project files live in `crew-project/`, gitignored.** `SKILL.md` is committed and permanent; `index.md` and `<project>.md` are never committed. ADR 0015 decision 5 (no generator) is superseded.
 

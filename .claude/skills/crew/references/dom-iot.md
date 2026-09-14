@@ -5,8 +5,8 @@
 >
 > Dernière passe de veille : 2026-09-14
 >
-> La mécanique de broker est dans `references/kafka.md`, le cycle de vie des sockets dans
-> `references/ws.md`. Ici : ce qui disparaît si le domaine change.
+> La mécanique de broker est dans `references/bp-kafka.md`, le cycle de vie des sockets dans
+> `references/bp-ws.md`. Ici : ce qui disparaît si le domaine change.
 
 ## Règles
 
@@ -29,7 +29,7 @@
 - Never assume a command was received because it was sent
 - Never design an upgrade, migration or schema change that requires the whole fleet to be online at once
 - Never size ingestion on the average rate: a fleet reconnecting after an outage delivers hours of buffered traffic in minutes
-- Do NOT use these rules for broker mechanics (`references/kafka.md`) or socket lifecycle (`references/ws.md`)
+- Do NOT use these rules for broker mechanics (`references/bp-kafka.md`) or socket lifecycle (`references/bp-ws.md`)
 
 ### En un coup d'oeil
 
@@ -82,7 +82,7 @@ La clé de déduplication naturelle est `(device id, horodatage device)`, évent
 
 C'est la différence la plus structurante avec un backend : on ne « déploie » pas une flotte. À tout instant, une partie des devices est hors ligne, une autre tourne sur une version vieille de deux ans, une autre ne sera jamais mise à jour.
 
-Donc tout changement de schéma est **additif, définitivement**. Il n'existe pas de fenêtre où l'on pourrait retirer un champ : les messages de l'ancien format continueront d'arriver. C'est la contrainte de compatibilité d'`references/kafka.md`, mais sans date de fin.
+Donc tout changement de schéma est **additif, définitivement**. Il n'existe pas de fenêtre où l'on pourrait retirer un champ : les messages de l'ancien format continueront d'arriver. C'est la contrainte de compatibilité d'`references/bp-kafka.md`, mais sans date de fin.
 
 ### 7. Les commandes descendantes
 

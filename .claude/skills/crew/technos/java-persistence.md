@@ -23,7 +23,7 @@
 - Never reference a lazy association from `toString()` — it throws `LazyInitializationException` outside a session, usually from a log line
 - Never resolve an N+1 by widening the mapping to `EAGER`; fix the query that caused it
 - Never let a schema change ride along silently — flag it and stop, per `agents/agent-dev.md`'s API/schema rule
-- Do NOT use these rules for which layer may see an entity, or to entity → DTO → mapper boundaries — that is `references/layering.md`
+- Do NOT use these rules for which layer may see an entity, or to entity → DTO → mapper boundaries — that is `references/bp-layering.md`
 
 <!-- Customization hook — les noms et signatures maison (classe de base, stratégie d'id, colonnes d'audit) vivent dans le fichier projet, jamais ici. -->
 

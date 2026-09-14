@@ -6,6 +6,6 @@
 >
 > Dernière passe de veille : —  ·  Statut : **à peupler**
 >
-> Format de référence : voir `references/persistence.md` (sections `## Règles` / `## Pourquoi`)
+> Format de référence : voir `technos/java-persistence.md` (sections `## Règles` / `## Pourquoi`)
 
 ## Sources

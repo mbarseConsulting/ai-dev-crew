@@ -25,7 +25,7 @@
 - Never expose internal detail in an error payload — stack traces, SQL, framework exception class names, internal identifiers
 - Never change an existing contract (path, field, status code, error shape) without flagging it and stopping, per `agents/agent-dev.md`'s API/schema rule — an added optional field is compatible, a renamed or removed one is not
 - Never document a `summary` with a trailing period, and never leave `description` holding a sentence that belongs in `summary`
-- Do NOT use these rules for internal layer boundaries or mapping (`references/layering.md`), to broker events (`references/kafka.md`), or to socket contracts (`references/ws.md`)
+- Do NOT use these rules for internal layer boundaries or mapping (`references/bp-layering.md`), to broker events (`references/bp-kafka.md`), or to socket contracts (`references/bp-ws.md`)
 
 ### What you report but don't auto-fix
 
@@ -53,8 +53,8 @@
 >
 > Dernière passe de veille : 2026-09-14
 >
-> Ce qui traverse quelle couche est dans `references/layering.md`. Les contrats d'événements sont
-> dans `references/kafka.md`, ceux de socket dans `references/ws.md`.
+> Ce qui traverse quelle couche est dans `references/bp-layering.md`. Les contrats d'événements sont
+> dans `references/bp-kafka.md`, ceux de socket dans `references/bp-ws.md`.
 
 ## 1. Le contrat se conçoit, il ne se déduit pas
 
@@ -63,7 +63,7 @@ de la base. Les champs portent les noms des colonnes, les ressources épousent l
 et chaque refactoring de persistance devient une rupture de contrat.
 
 L'API est une **frontière publique**. Elle parle la langue de celui qui la consomme. Le
-lien avec `references/layering.md` est direct : si le controller retourne l'entité, le contrat est
+lien avec `references/bp-layering.md` est direct : si le controller retourne l'entité, le contrat est
 dérivé de la persistance par construction, et personne ne l'a jamais conçu.
 
 ## 2. Codes de statut

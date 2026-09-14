@@ -1,16 +1,16 @@
 ---
 name: crew
-description: "Use when: (1) implementing a feature or fixing a bug in application code, (2) running a test suite independently or fixing red tests, (3) a change must be reviewed for quality or security before merge, (4) work needs qualifying and routing across several roles, (5) a technical decision has real trade-offs, (6) running a tech-watch pass on the library's rules."
-argument-hint: "[-d | -t | -r | -b | -a | -w] [-c] <task>"
+description: "Use when: (1) implementing a feature or fixing a bug in Java/Spring, Angular, Node or Python/FastAPI code, (2) running a test suite independently or fixing red tests, (3) a change must be reviewed for quality or security before merge, (4) work needs qualifying and routing across several roles, (5) a technical decision has real trade-offs."
+argument-hint: "[-d | -t | -r [--quality | --security] | -b | -a] [-c] <task>"
 ---
 
 ## LOAD AGENT
 
 1. **Pick the role** from the flag (table below). No flag → `agent-dev`.
 2. **Detect the techno** with the detection table below.
-3. Read `agents/{role}.md` — you ARE this agent. It loads `technos/{techno}.md`, which points to its references.
+3. Read `agents/{role}.md` — you ARE this agent. The agent says when to read `technos/{techno}.md`, which lists its own `technos/{techno}-*.md` references: never read it before the agent asks.
 
-**Option — `-c` / `--context`:** use the `Agent` tool with `subagent_type: "{role}"` instead of reading it inline, with a self-contained brief naming the techno.
+**Option — `-c` / `--context`:** use the `Agent` tool with `subagent_type: "{role}"` instead of reading it inline, with a self-contained brief naming the techno. Never for `-b` or `-a`: the butler talks to the user, so it always runs inline — ignore `-c` and say so.
 
 ## OPTIONS
 
@@ -21,16 +21,15 @@ argument-hint: "[-d | -t | -r | -b | -a | -w] [-c] <task>"
 | `-r` / `--review` | `agents/agent-review.md` | reviews — add `--quality` or `--security` for one lens |
 | `-b` / `--butler` | `agents/agent-butler.md` | qualifies the need and launches the other roles |
 | `-a` / `--architecture` | `agents/agent-butler.md` | settles a decision with trade-offs, in dialogue |
-| `-w` / `--watch` | `agents/agent-butler.md` | tech-watch pass on this skill — never at a client site |
 
 ## BEHAVIOR
 
 ### What you MUST do
 
 - Resolve every path against the directory holding this `SKILL.md`. If it was not given: `.claude/skills/crew/`, then `~/.claude/skills/crew/`
-- Read in this order: the project file (if supplied), the agent, the techno file, the references the context calls for
-- The project file is the only source for the **domain** and this project's own names. None supplied → work from the universal references and say so
-- **Independence guard:** `-t` or `-r` in a conversation that already ran `-d` on the same change → label the output **"Self-check — not the gate"**, no verdict. A fresh conversation or `-c` avoids it
+- Read in this order: the project file (if supplied), the agent, then the techno file and the references the context calls for — when the agent's steps reach them
+- The project file is the only source for the **domain** and this project's own names. None supplied → work from the shared references and say so
+- **Independence guard:** `-t` or `-r` in a conversation that wrote or briefed the same change (it ran `-d` or `-b` on it) → label the output **"Self-check — not the gate"**, no verdict. A fresh conversation or `-c` avoids it
 - Say which agent, techno and references were loaded, in the first lines of the output
 
 ### What you NEVER do
@@ -48,24 +47,31 @@ Match the changed file and the **nearest** build file above it, never the reposi
 
 | Nearest to the changed file | Techno |
 | --- | --- |
-| `*.java`, or `pom.xml` / `build.gradle(.kts)` | `technos/java.md` |
-| `*.ts` / `*.html` under an `angular.json` project | `technos/angular.md` |
-| `*.ts` / `*.js` under a `package.json` with no `angular.json` above it, serving HTTP | `technos/node-bff.md` |
-| `*.py`, or `pyproject.toml` | `technos/python.md` |
+| `*.java`, or a `pom.xml` / `build.gradle(.kts)` itself | `technos/java.md` |
+| `*.ts` / `*.html` / `*.scss` / `*.css` under an `angular.json` project | `technos/angular.md` |
+| `*.ts` / `*.js` under a `package.json` with no `angular.json` above it, whose dependencies include `express`, `fastify`, `koa`, `hono` or `@nestjs/core` | `technos/node.md` |
+| `*.py` under a `pyproject.toml` whose dependencies include `fastapi` | `technos/python.md` |
 
-The techno file lists its own references. Shared ones load by context:
+A file matching no row — `*.kt`, a Node library, a Django app — has no techno: say so and stop.
+
+### Shared references — loaded by context, whatever the techno
 
 | Context present in the change | Load |
 | --- | --- |
-| A commit, a version bump, a changelog, "is it done?" | `references/conventions.md` |
-| An entity's mapping, identity, auditing, fetch strategy or transactions; an N+1 | `references/persistence.md` |
-| The project file declares the IoT domain | `references/iot.md` |
+| Any change to source code | `references/bp-code.md` |
+| A commit, a version bump, a changelog, "is it done?" | `references/bp-conventions.md` |
+| A DTO, a mapper, a controller returning data, a layer boundary | `references/bp-layering.md` |
+| An HTTP endpoint, a status code, a payload, OpenAPI | `references/bp-api-rest.md` |
+| An endpoint that aggregates or reshapes backend calls for one front end | `references/bp-bff.md` |
+| A producer, a consumer, a topic, an event payload | `references/bp-kafka.md` |
+| A socket handler, a message envelope, reconnection | `references/bp-ws.md` |
+| The project file's `Références de domaine` line lists `iot` | `references/dom-iot.md` |
 
-Agent-owned references, loaded by their agent: `references/testfix.md`, `references/code-quality.md`, `references/security-review.md`, `references/architecture.md`, `references/watch.md`, `references/sources.md`.
+Agent-owned procedures, loaded by their agent: `references/proc-testfix.md`, `references/proc-quality.md`, `references/proc-security.md`, `references/proc-architecture.md`.
 
 ### Paste mode — what to paste together
 
-One fresh conversation per role. Paste, in order: project file (if any) · this `SKILL.md` · the agent · the techno file · the references its context calls for — plus, for `-t`, `references/testfix.md`; for `-r`, `references/code-quality.md`, `references/security-review.md` and `references/conventions.md`; for `-a`, `references/architecture.md`; for `-w`, `references/watch.md` and `references/sources.md`.
+One fresh conversation per role. Paste, in order: project file (if any) · this `SKILL.md` · the agent · the techno file · the references its context calls for — plus, for `-t`, `references/proc-testfix.md`, and the techno file only once a fix touches source code; for `-r`, `references/proc-quality.md`, `references/proc-security.md` and `references/bp-conventions.md`; for `-a`, `references/proc-architecture.md`.
 
 ## OUTPUT
 

@@ -2,7 +2,7 @@
 
 **Status:** authoritative. This document is the source of truth for what the ai-dev-crew crew IS: its roles, its flow, its contracts. It is not a how-to — see [`README.md`](../README.md) for install and usage. Any future evolution of the crew starts by updating this file (and, if it represents a new decision, adding an entry under [`docs/adr/`](./adr/)) *before* library files change. Decisions recorded here are not re-litigated verbally.
 
-Shipped structure: **2 skills (`crew`, `crew-project`); inside `crew`, 4 role agents, 4 technos and 16 references; 4 launchable shells in `.claude/agents/`; no plugins.** See [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
+Shipped structure: **3 skills (`crew`, `crew-project`, `crew-maintenance`); inside `crew`, 4 role agents, 4 technos, 3 techno references and 12 shared references; 4 launchable shells in `.claude/agents/`; no plugins.** File layout: [`docs/doctrine.md`](./doctrine.md) §2. See [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
 
 ## Doctrine: the crew is one skill + the file contract
 
@@ -20,19 +20,18 @@ One verb per role. All technology, domain and procedural knowledge lives in the 
 ### `agent-tester` — `/crew -t`
 
 - **Runs the full suite**, not the author's targeted run, and flags disabled tests.
-- When a test is red it already holds the output, so it fixes it under `references/testfix.md` (3 cycles at most) and lists **every file it modified**, source files first.
+- When a test is red it already holds the output, so it fixes it under `references/proc-testfix.md` (3 cycles at most) and lists **every file it modified**, source files first.
 - **Boundary:** never implements features, never reviews, never launches anyone.
 
 ### `agent-review` — `/crew -r`
 
-- **Reviews.** Quality and security lenses (`references/code-quality.md`, `references/security-review.md`), conventions from `references/conventions.md`, the techno file as a conventions lens. Findings marked blocking or non-blocking; one verdict: **approve**, **approve with suggestions**, **changes requested**.
+- **Reviews.** Quality and security lenses (`references/proc-quality.md`, `references/proc-security.md`), conventions from `references/bp-conventions.md`, the techno file as a conventions lens. Findings marked blocking or non-blocking; one verdict: **approve**, **approve with suggestions**, **changes requested**.
 - **Boundary:** never edits code — no `Edit` in its shell. `Bash` writes are closed by behavioral rule only ([ADR 0004](./adr/0004-role-tool-allowlists.md), [ADR 0007](./adr/0007-butler-topology-and-write-scope.md)).
 
-### `agent-butler` — `/crew -b`, `-a`, `-w`
+### `agent-butler` — `/crew -b`, `-a`
 
 - **Orchestrates.** Qualifies the need; launches `agent-dev` ×N (one per technology, disjoint files), then `agent-tester`, then `agent-review`, with a user gate between phases; sanity-checks what `agent-dev` returns. As a whole session: `claude --agent agent-butler`, which also preloads `crew-project`.
-- **Architecture (`-a`):** settles decisions with trade-offs in dialogue with the user, under `references/architecture.md`, writing to `docs/adr/` or `docs/design/`.
-- **Watch (`-w`):** maintains the library's rules under `references/watch.md` ([ADR 0010](./adr/0010-watch-craft-maintenance-loop.md)). Never at a client site.
+- **Architecture (`-a`):** settles decisions with trade-offs in dialogue with the user, under `references/proc-architecture.md`, writing to `docs/adr/` or `docs/design/`.
 - **Boundary:** never develops (no `Edit`), never runs the suite, never reviews ([ADR 0003](./adr/0003-butler-critic-separation.md)). `Write` only to `docs/adr/` and `docs/design/`.
 
 ## 2. Canonical flow
@@ -51,22 +50,23 @@ user ↔ agent-butler ─┬─ (-a, if a decision is needed)
 
 Phases never auto-chain. Each agent reports back to the butler, never to the next role. Parallel review: two `agent-review` instances, one per lens; the quality-lens instance alone writes the merged report.
 
-The router reads the agent inline by default; `-c` launches it as a subagent. `-t` or `-r` run in a conversation that already ran `-d` on the same change are labelled **"Self-check — not the gate"** and give no verdict ([ADR 0016](./adr/0016-one-crew-skill-role-as-mode.md)).
+The router reads the agent inline by default; `-c` launches it as a subagent — never the butler, which talks to the user. `-t` or `-r` run in a conversation that wrote or briefed the same change (it ran `-d` or `-b` on it) are labelled **"Self-check — not the gate"** and give no verdict ([ADR 0016](./adr/0016-one-crew-skill-role-as-mode.md)).
 
 ## 3. Skills catalog
 
 | Skill | Invoked when | Carries |
 | --- | --- | --- |
-| `crew` | developing, testing, reviewing, orchestrating, deciding, watching | router; `agents/` (4 roles); `technos/` (4); `references/` (16) |
+| `crew` | developing, testing, reviewing, orchestrating, deciding | router; `agents/`; `technos/`; `references/` |
 | `crew-project` | the project's domain, stack or house names are not obvious from its files | the path → project router |
+| `crew-maintenance` | maintaining `crew` in this repository — structural repair (`-d`), tech watch (`-w`) | the watch procedure and its feeds; never copied to a client |
 
-**A skill names no other skill** — without exception. A skill references only its own files, by paths relative to its directory. `.claude/agents/agent-butler.md` composes `crew` with `crew-project`.
+**A skill names no other skill** — one exception: `crew-maintenance` names `crew` ([ADR 0017](./adr/0017-crew-maintenance-out-of-crew.md)). The `.claude/agents/` shells compose `crew` with `crew-project`.
 
-Composition: router → agent → techno → references. Detection matches the nearest build file above the changed file. References load **by context**, never by default.
+Composition: router → agent → techno → references. Detection matches the changed file and the nearest build file above it; a file matching no row has no techno, and work stops. References load **by context**, never by default: a techno lists its own `technos/<techno>-*.md`, `SKILL.md`'s shared table holds the `bp-` and `dom-` references, each agent loads its `proc-` procedures. Where each file goes: [`docs/doctrine.md`](./doctrine.md) §1–2.
 
 **Technology is detected; the domain is declared** ([ADR 0015](./adr/0015-library-project-boundary-and-domain-axis.md)): the domain comes from a project file.
 
-[ADR 0013](./adr/0013-craft-skill-taxonomy.md)'s families organise `crew/references/`, plus the domain axis of ADR 0015. A reference carries **`## Règles`** (normative) and **`## Pourquoi`** (explanation); where they disagree, `## Règles` is right. For `java-spring.md` and `node-bff.md`, the rules are the techno file's MUST/NEVER.
+A reference carries **`## Règles`** (normative) and **`## Pourquoi`** (explanation); where they disagree, `## Règles` is right. For `technos/java-spring.md`, the rules are `technos/java.md`'s MUST/NEVER.
 
 **Nothing project- or employer-specific is committed.** Project files live in `crew-project/`, gitignored, deleted when the job ends.
 
@@ -89,7 +89,7 @@ The crew **consumes** specifications; it does not author them. Upstream tools (B
 ## 6. Enforcement layers
 
 - **Tool allowlists** in `.claude/agents/`: `agent-butler` — no `Edit`, `Write` scoped to `docs/adr/`/`docs/design/`; `agent-dev` — no `Agent`; `agent-tester` — `Read, Grep, Glob, Bash, Write, Edit`; `agent-review` — no `Edit`, no `Agent`, `Write` scoped to `docs/reviews/`. Guardrails, not sandboxes ([ADR 0004](./adr/0004-role-tool-allowlists.md)).
-- **Skill preloading** (`skills:`): every shell preloads `crew`; `agent-butler` also preloads `crew-project`. `crew` must not set `disable-model-invocation`.
+- **Skill preloading** (`skills:`): every shell preloads `crew` and `crew-project`; a shell whose brief gives no project file path routes the project itself. `crew` must not set `disable-model-invocation`.
 - **Verification loop**: `agent-dev` requires execution evidence ([ADR 0005](./adr/0005-verification-loop.md)).
 - **Single source of truth per rule** ([ADR 0008](./adr/0008-skills-first-doctrine.md)).
 - **Structural check**: `scripts/crew-doctor.sh`, run by the versioned `.githooks/pre-commit`.
@@ -106,7 +106,7 @@ Any change to the crew's roles, flow or contracts starts with a PR that updates 
 
 | Role / work | Model | Rationale |
 | --- | --- | --- |
-| `agent-butler` (incl. `-a`, `-w`) | session model | main conversation |
+| `agent-butler` (incl. `-a`) | session model | main conversation |
 | Code exploration fan-out | Haiku | High volume, low reasoning |
 | `agent-dev` | Sonnet | Implementation; cost/quality sweet spot |
 | `agent-tester` | Sonnet | Suite execution; bounded fixes |

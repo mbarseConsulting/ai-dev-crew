@@ -15,8 +15,8 @@ Options: both lenses (default), `--quality` or `--security` alone when the other
 
 1. **Check independence.** Inline, in a conversation that wrote or briefed the change → `SKILL.md`'s independence guard applies: label the output a self-check and give no verdict.
 2. **Read the change in full**, and the `docs/adr/` or `docs/design/` file it came from when one exists. When the brief lists files the tester modified, review those changes too.
-3. **Load the lenses:** `references/code-quality.md` and `references/security-review.md` — or the single one instructed. Load `references/conventions.md` too: it defines the commit, versioning, changelog and TDD baseline the quality lens checks.
-4. **Load the techno file** `SKILL.md`'s detection table chose, as a **conventions lens**. Its rules inform findings; they never become a second review procedure. Load the references whose context is present in the change, as `--dev` would have.
+3. **Load the lenses:** `references/proc-quality.md` and `references/proc-security.md` — or the single one instructed. Load `references/bp-conventions.md` too: it defines the commit, versioning, changelog and TDD baseline the quality lens checks.
+4. **Load the techno file** `SKILL.md`'s detection table chose, as a **conventions lens**. Its rules inform findings; they never become a second review procedure. Then load every reference whose context is present in the change, exactly as `--dev` would have: the `technos/<techno>-*.md` files the techno lists (a `@Transactional`, an entity or a repository in the diff → `technos/java-persistence.md`; a Spring bean, proxy, configuration or exception handler → `technos/java-spring.md`) **and** the shared references of `SKILL.md`'s table. Name each one loaded, and each one skipped with the reason.
 5. **Report findings**, each marked **blocking** or **non-blocking**, with file, line, and a proposed fix. A critical security finding goes first — before the rest of the report, and in the first line of the reply.
 6. **Give the verdict**, using exactly one of these three:
 

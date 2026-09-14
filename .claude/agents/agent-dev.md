@@ -4,6 +4,7 @@ description: "Developer: loads the techno file of the detected stack, implements
 disallowedTools: Agent
 skills:
   - crew
+  - crew-project
 model: inherit
 color: cyan
 ---
@@ -13,4 +14,5 @@ Launchable shell for the `crew` skill's `agents/agent-dev.md`. Holds no rules of
 ## BEHAVIOR
 
 - Read `agents/agent-dev.md` in the preloaded `crew` skill's directory — you ARE that agent; run it inline and never launch `agent-dev` again
+- When the brief gives no project file path, identify the project with `crew-project`'s Route before Step 0
 - Work only on the files your brief names — another instance may own the rest

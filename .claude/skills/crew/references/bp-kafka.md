@@ -23,7 +23,7 @@
 - Never swallow a poison message: an unbounded retry blocks its partition, and a silent skip loses data with no trace
 - Never change an event payload in a way that breaks existing consumers without flagging it and stopping — an event schema is a contract exactly like an HTTP one
 - Never perform long blocking work inside the poll loop
-- Do NOT use these rules for synchronous HTTP contracts (`references/api-rest.md`) or socket sessions (`references/ws.md`)
+- Do NOT use these rules for synchronous HTTP contracts (`references/bp-api-rest.md`) or socket sessions (`references/bp-ws.md`)
 
 ### What you report but don't auto-fix
 
@@ -49,7 +49,7 @@
 >
 > Dernière passe de veille : 2026-09-14
 >
-> Les contrats HTTP sont dans `references/api-rest.md`, les sockets dans `references/ws.md`.
+> Les contrats HTTP sont dans `references/bp-api-rest.md`, les sockets dans `references/bp-ws.md`.
 
 ## 1. L'ordre est une propriété de la partition, jamais du topic
 

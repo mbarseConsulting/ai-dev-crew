@@ -9,8 +9,8 @@
 > Dernière passe de veille : 2026-09-14 · Cible : Java 21 LTS / Spring Boot 3.x
 >
 > Ce qui relève du mapping, de l'identité d'entité ou des frontières transactionnelles est
-> dans `references/persistence.md`. Ce qui relève des couches est dans `references/layering.md`. Ce qui
-> relève de la forme du contrat HTTP est dans `references/api-rest.md`.
+> dans `technos/java-persistence.md`. Ce qui relève des couches est dans `references/bp-layering.md`. Ce qui
+> relève de la forme du contrat HTTP est dans `references/bp-api-rest.md`.
 
 ## Pourquoi
 
@@ -62,7 +62,7 @@ que l'écriture — elle complique tout le reste.
 **`record`** pour tout porteur de données immuable : DTO, value object, événement.
 `equals`/`hashCode`/`toString` sont générés et corrects. Une classe ne se justifie que si
 l'objet a une identité propre ou un état mutable. *(Une entité JPA n'est pas un `record` :
-JPA exige un constructeur sans argument et des champs mutables — voir `references/persistence.md`.)*
+JPA exige un constructeur sans argument et des champs mutables — voir `technos/java-persistence.md`.)*
 
 **`Optional`** en **type de retour uniquement**. Jamais en champ (non sérialisable,
 surcoût mémoire), jamais en paramètre (l'appelant a alors trois cas : valeur, vide, `null`),

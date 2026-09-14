@@ -31,13 +31,15 @@ dans une fenêtre de collage — voir la règle de granularité dans [`docs/doct
 
 ## Les skills
 
-Deux. **Une skill ne nomme jamais une autre skill** : elle ne référence que ses propres
+Trois. **Une skill ne nomme jamais une autre skill** : elle ne référence que ses propres
 fichiers, donc elle marche seule, collée ou chargée ([ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)).
+Seule exception : `crew-maintenance` nomme `crew`, qu'elle maintient ([ADR 0017](./docs/adr/0017-crew-maintenance-out-of-crew.md)).
 
-| Commande | Quand |
-| --- | --- |
-| `/crew` | développer, tester, relire, orchestrer, décider, veiller |
-| `/crew-project` | le domaine ou les noms maison ne se voient pas dans le code |
+| Commande | Quand | Part chez le client |
+| --- | --- | --- |
+| `/crew` | développer, tester, relire, orchestrer, décider | oui |
+| `/crew-project` | le domaine ou les noms maison ne se voient pas dans le code | le routeur, pas les projets |
+| `/crew-maintenance` | réparer la structure (`-d`), veiller sur les règles de `crew` (`-w`) | **jamais** |
 
 `/crew` détecte la techno, choisit le rôle, et c'est tout :
 
@@ -52,15 +54,15 @@ fichiers, donc elle marche seule, collée ou chargée ([ADR 0016](./docs/adr/001
 | `-r` | `agent-review` | relit qualité + sécurité, rend un verdict |
 | `-b` | `agent-butler` | qualifie, lance les autres rôles, tient les gates |
 | `-a` | `agent-butler` | tranche une décision à arbitrages, en dialogue |
-| `-w` | `agent-butler` | veille sur les règles de la bibliothèque |
 
-`-c` lance le rôle en subagent au lieu de le lire en place.
+`-c` lance le rôle en subagent au lieu de le lire en place — jamais le butler.
 
-**Garde d'indépendance** : `-t` ou `-r` dans la conversation qui a fait `-d` sur le même
+**Garde d'indépendance** : `-t` ou `-r` dans la conversation qui a écrit ou briefé le même
 changement produit un « Self-check — not the gate », jamais un verdict.
 
-Les références se chargent **par contexte**, jamais par défaut. Chaque techno liste les
-siennes ; la détection se fait sur le fichier de build **le plus proche** du fichier modifié.
+Les références se chargent **par contexte**, jamais par défaut ; la détection se fait sur le
+fichier de build **le plus proche** du fichier modifié. Où va chaque fichier et comment il se
+nomme : [`docs/doctrine.md`](./docs/doctrine.md) §1–2, seule source.
 
 Une référence porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique.**
 
@@ -70,15 +72,15 @@ le domaine se déclare.**
 
 ## Les agents
 
-`.claude/agents/` contient 4 shells lançables. Chacun précharge `crew`, pointe vers son
-fichier dans `crew/agents/`, et n'apporte qu'un contexte vierge et des outils restreints :
+`.claude/agents/` contient 4 shells lançables. Chacun précharge `crew` et `crew-project`, pointe
+vers son fichier dans `crew/agents/`, et n'apporte qu'un contexte vierge et des outils restreints :
 
 | Shell | Outils retirés |
 | --- | --- |
 | `agent-dev` | `Agent` : il développe, il ne lance personne |
 | `agent-tester` | `Agent` |
 | `agent-review` | `Edit`, `Agent` : il ne peut pas réécrire ce qu'il relit |
-| `agent-butler` | `Edit` ; précharge aussi `crew-project` — `claude --agent agent-butler` |
+| `agent-butler` | `Edit` — `claude --agent agent-butler`, jamais en subagent |
 
 ```mermaid
 flowchart LR
@@ -113,11 +115,9 @@ Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitra
 ai-dev-crew/
 ├── .claude/
 │   ├── skills/
-│   │   ├── crew/           SKILL.md
-│   │   │                   agents/{agent-dev,agent-tester,agent-review,agent-butler}.md
-│   │   │                   technos/{java,angular,node-bff,python}.md
-│   │   │                   references/*.md (16)
-│   │   └── crew-project/   SKILL.md  (index.md · <projet>.md — gitignorés)
+│   │   ├── crew/              SKILL.md · agents/ · technos/ · references/  (détail : docs/doctrine.md §2)
+│   │   ├── crew-project/      SKILL.md  (index.md · <projet>.md — gitignorés)
+│   │   └── crew-maintenance/  SKILL.md · references/  (jamais copiée chez le client)
 │   └── agents/             4 shells lançables
 ├── .githooks/pre-commit    lance scripts/crew-doctor.sh
 ├── docs/                   SPEC.md · doctrine.md · skill-manifest.csv · adr/ · design/ · plans/ · reviews/ · watch/
@@ -127,7 +127,8 @@ ai-dev-crew/
 
 ## Chantiers ouverts
 
-- `references/angular-patterns.md` est vide : `technos/angular.md` n'a pas encore de `## Pourquoi`
+- `technos/angular-patterns.md` est vide : `technos/angular.md` n'a pas encore de `## Pourquoi`
+- `technos/node.md` est vide : ses anciennes règles étaient le pattern BFF, devenu `references/bp-bff.md`
 - `technos/python.md` est parqué — conservé, pas maintenu
 - Le test de routage live ([ADR 0014](./docs/adr/0014-activity-first-skill-agent-pattern.md)) et les évaluations par mode restent à faire
 - [ADR 0009](./docs/adr/0009-model-routing.md) ne vaut qu'en local, là où le modèle se choisit

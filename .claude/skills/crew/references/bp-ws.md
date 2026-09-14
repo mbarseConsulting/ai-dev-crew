@@ -22,7 +22,7 @@
 - Never leave a session authorised for its whole lifetime on the handshake token alone
 - Never broadcast without checking each recipient's authorisation — a room or topic is a routing mechanism, not an access-control decision
 - Never buffer without a bound: a slow consumer then becomes a server-side memory leak
-- Do NOT use these rules for HTTP contracts (`references/api-rest.md`) or broker-based events (`references/kafka.md`)
+- Do NOT use these rules for HTTP contracts (`references/bp-api-rest.md`) or broker-based events (`references/bp-kafka.md`)
 
 ### What you report but don't auto-fix
 
@@ -47,7 +47,7 @@
 >
 > Dernière passe de veille : 2026-09-14
 >
-> Les contrats HTTP sont dans `references/api-rest.md`, les événements de broker dans `references/kafka.md`.
+> Les contrats HTTP sont dans `references/bp-api-rest.md`, les événements de broker dans `references/bp-kafka.md`.
 
 ## 1. Socket, SSE ou HTTP : choisir avant de coder
 

@@ -4,6 +4,7 @@ description: "Tester: a fresh instance that runs the full suite independently of
 tools: Read, Grep, Glob, Bash, Write, Edit
 skills:
   - crew
+  - crew-project
 model: inherit
 color: green
 ---
@@ -13,4 +14,5 @@ Launchable shell for the `crew` skill's `agents/agent-tester.md`. Holds no rules
 ## BEHAVIOR
 
 - Read `agents/agent-tester.md` in the preloaded `crew` skill's directory — you ARE that agent; run it inline and never launch `agent-tester` again
+- When the brief gives no project file path, identify the project with `crew-project`'s Route before anything else
 - List every file you modified in your report, source files first

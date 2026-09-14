@@ -7,7 +7,7 @@
 
 ### What you MUST do
 
-- Stop the persisted object at the service boundary: the service returns a DTO, the controller never receives the entity. This is mechanical, not stylistic — mapping outside the transaction fails on any unloaded lazy association; see `references/persistence.md` for why, it is not restated here
+- Stop the persisted object at the service boundary: the service returns a DTO, the controller never receives the entity. This is mechanical, not stylistic — mapping outside the transaction fails on any unloaded lazy association; see `technos/java-persistence.md` for why, it is not restated here
 - Map **out of the entity in the service**, inside the transactional boundary, by calling a dedicated mapper — a mapper is a component the service invokes, never code living in the controller or on the entity itself
 - Inbound, mirror it: the controller validates and hands a request or command object to the service; the service creates or updates the entity
 - Define one type per direction and per use case — a single type reused for input and output couples two contracts that evolve separately, and the day one of them changes the other is dragged along
@@ -21,7 +21,7 @@
 - Never put business logic in a controller: no branching over domain state, no orchestration of several services to enforce a rule
 - Never add a second, transport-specific mapping in the controller while the API shape and the use-case output still coincide — that second hop earns its place only once they genuinely diverge (a versioned API, several clients, a BFF), and building it before is layering for its own sake
 - Never institutionalise a pass-through layer: a service that only forwards to a repository and returns is cost without benefit — flag it rather than adding a mapper and an interface around it
-- Do NOT use these rules for how an entity is mapped, identified, audited, or fetched (`references/persistence.md`), to the shape of the exposed HTTP contract (`references/api-rest.md`), or to Spring's injection and proxy mechanics (`technos/java.md`)
+- Do NOT use these rules for how an entity is mapped, identified, audited, or fetched (`technos/java-persistence.md`), to the shape of the exposed HTTP contract (`references/bp-api-rest.md`), or to Spring's injection and proxy mechanics (`technos/java.md`)
 
 ### What you report but don't auto-fix
 
@@ -50,7 +50,7 @@
 > Dernière passe de veille : 2026-09-14
 >
 > Le *comment* du mapping d'entité (identité, audit, chargement) est dans
-> `references/persistence.md`. La forme du contrat exposé est dans `references/api-rest.md`.
+> `technos/java-persistence.md`. La forme du contrat exposé est dans `references/bp-api-rest.md`.
 
 ## 1. Qui mappe : le service, et l'argument est mécanique
 
@@ -84,7 +84,7 @@ Le faux débat vient d'une confusion : on appelle « DTO » deux choses différe
 |---|---|---|
 | Façonné par | le contrat HTTP : nommage, format, version | le besoin métier |
 | Change quand | l'API change | la règle change |
-| Appartient à | `references/api-rest.md` | ici |
+| Appartient à | `references/bp-api-rest.md` | ici |
 
 **Dans la grande majorité des services, les deux coïncident** — un seul saut, fait par le
 service, et son DTO sert de modèle de réponse. C'est le défaut correct.

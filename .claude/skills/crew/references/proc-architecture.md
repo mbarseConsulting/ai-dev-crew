@@ -7,7 +7,7 @@ Loaded by `agents/agent-butler.md` under `-a`. Always inline, in the conversatio
 ### What you MUST do
 
 - State the constraints (team size, timeline, existing stack, non-negotiables) before proposing a design
-- Load the techno files and references for what the decision involves — a Kafka-versus-WebSocket choice loads `references/kafka.md` and `references/ws.md`, a layering question loads `references/layering.md` — so that options are weighed against the library's own rules, not general knowledge
+- Load the techno files and references for what the decision involves — a Kafka-versus-WebSocket choice loads `references/bp-kafka.md` and `references/bp-ws.md`, a layering question loads `references/bp-layering.md` — so that options are weighed against the library's own rules, not general knowledge
 - Name at least one alternative that was considered and rejected, with the reason
 - Distinguish reversible decisions (make the call and move on) from irreversible ones (flag for explicit sign-off before proceeding)
 - Record a decision as a short ADR — context, decision, alternatives, consequences — whenever it is expensive to reverse or affects system boundaries or repo layout: the same predicate as this mode's trigger, not a separately judged "is this significant"

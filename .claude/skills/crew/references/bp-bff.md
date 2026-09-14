@@ -1,17 +1,53 @@
-# node-bff — BFF Node.js
+# bff — Backend For Frontend
 
-> **Quoi et pourquoi.** Le framework HTTP, les conventions de logging/tracing et la gestion
-> des secrets retenus d'un projet vont dans son **fichier projet**, jamais ici.
->
-> Ce fichier n'a pas de `## Règles` : elles sont les MUST/NEVER de `technos/node-bff.md`.
-> Il en est le `## Pourquoi`. En cas de désaccord, le fichier techno a raison.
->
-> Dernière passe de veille : 2026-09-14
->
-> Le code Angular est dans `technos/angular.md`, la forme du contrat exposé dans `references/api-rest.md`,
-> les frontières internes d'un backend dans `references/layering.md`.
+> Chargé quand le contexte le demande. Deux étages :
+> **Règles** fait autorité, **Pourquoi** explique. En cas de désaccord, Règles a raison.
+
+## Règles
+
+### What you MUST do
+
+- Keep the BFF a composition layer: it aggregates, reshapes and protects. A business rule belongs to the backend that owns the data it governs
+- Shape each endpoint around one screen's need — that is the entire point of a BFF, and the reason it may legitimately differ from the backend's own contract
+- Put an explicit timeout on every outbound call, shorter than the BFF's own response budget, and decide per dependency what a failure means: degrade the response, or fail it
+- Keep tokens and secrets server-side. What the browser receives is what the screen needs, never what happened to be in the upstream payload
+- Propagate a correlation id through every outbound call, and log it — a BFF turns one user action into several calls, and without it a failure cannot be traced back
+- Validate what comes from the browser before forwarding it: being closer to the front end does not make input trusted
+- Retry only idempotent calls, with backoff — and count a retry against the same response budget as the original
+
+### What you NEVER do
+
+- Never duplicate a business rule already owned by a backend service: two copies of a rule will disagree, and the BFF's copy is the one nobody audits
+- Never forward an upstream error verbatim — it carries internal detail, and its shape is the upstream's contract, not the one the browser was promised
+- Never let the browser hold something it cannot protect: a token readable by page scripts is a token available to anything injected into the page
+- Never retry a non-idempotent call after a timeout — a timeout means the outcome is unknown, not that nothing happened
+- Never let one dependency without a timeout hold the whole aggregated response
+- Never cache a per-user response in a shared cache without the user in the key
+- Do NOT use these rules for front-end code, to the shape of the contract itself (`references/bp-api-rest.md`), or to layer boundaries inside a backend (`references/bp-layering.md`)
+
+### What you report but don't auto-fix
+
+- Adding a circuit breaker in front of a dependency that fails often
+- Caching an aggregated response, which is a freshness decision the product owns
+- Merging or splitting BFF endpoints as screens evolve
+
+### En un coup d'oeil
+
+- Aggregation and reshaping, without business rules
+- Timeouts, deliberate degradation, retry only where it is safe
+- Secrets, tokens, and what never reaches the browser
+- Correlation and traceability across fan-out
+- The boundary with the backend that owns the rule
+
+---
 
 ## Pourquoi
+
+> **Quoi et pourquoi.** Vrai quel que soit le langage du BFF. Le framework HTTP, les
+> conventions de logging/tracing et la gestion des secrets retenus d'un projet vont dans son
+> **fichier projet**, jamais ici.
+>
+> Dernière passe de veille : 2026-09-14
 
 ## 1. Ce qu'un BFF est, et ce qu'il devient si on n'y prend pas garde
 
@@ -54,7 +90,7 @@ arrivée. La requête a pu aboutir.
 Rejouer un appel idempotent (`GET`, `PUT`, `DELETE`) est sans danger. Rejouer un `POST`
 crée un doublon : un paiement, une commande, un e-mail en double. Si le rejeu est
 nécessaire sur une opération non idempotente, il passe par une clé d'idempotence portée par
-l'appel — voir `references/api-rest.md`.
+l'appel — voir `references/bp-api-rest.md`.
 
 Et un rejeu consomme le **même** budget de réponse que l'appel initial : trois tentatives à
 deux secondes, c'est six secondes d'attente utilisateur.
@@ -81,7 +117,7 @@ Une erreur amont ne traverse pas. Deux raisons distinctes :
   fait dépendre le front d'un contrat qu'il n'a jamais signé, et un changement amont casse
   le front sans que le BFF ait changé d'une ligne.
 
-Le BFF traduit vers son propre contrat d'erreur (`references/api-rest.md`), en conservant côté logs
+Le BFF traduit vers son propre contrat d'erreur (`references/bp-api-rest.md`), en conservant côté logs
 l'erreur d'origine et l'identifiant de corrélation.
 
 ## 6. Corrélation

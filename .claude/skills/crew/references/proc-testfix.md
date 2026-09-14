@@ -1,6 +1,6 @@
 # testfix — classify and fix red tests
 
-> Chargé par `agents/agent-tester.md`, et par `agents/agent-dev.md` quand un test passe au rouge. **Règles** fait autorité.
+> Chargé par `agents/agent-tester.md` en entier, et par `agents/agent-dev.md` pour la seule classification du Step 5 quand un test passe au rouge. **Règles** fait autorité.
 >
 > Dernière passe de veille : —
 
@@ -10,7 +10,7 @@ Execute the steps in order. Do not touch any file before Step 3's output is in h
 
 ### What you MUST do
 
-1. **Detect the runner.** Build file or `package.json` scripts first, then config files, then dependencies as a last resort. If it can't be determined, ask which command to run before proceeding.
+1. **Detect the runner.** Build file or `package.json` scripts first, then config files, then dependencies as a last resort. If it can't be determined, stop and report the runner as unknown — never guess a command; whoever briefed the run supplies it.
 
    | Found | Runner | One file / test | Full suite |
    | --- | --- | --- | --- |

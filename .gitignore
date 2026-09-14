@@ -47,5 +47,5 @@ local/*
 # crew-project : le routeur et le template suivent leur porteur, les projets sont jetables
 .claude/skills/crew-project/*
 !.claude/skills/crew-project/SKILL.md
-!.claude/skills/crew-project/templates/
-!.claude/skills/crew-project/templates/*
+!.claude/skills/crew-project/references/
+!.claude/skills/crew-project/references/*

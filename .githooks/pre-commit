@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Blocks a commit that breaks the library's structure. Bypass: git commit --no-verify
+exec "$(git rev-parse --show-toplevel)/scripts/crew-doctor.sh"

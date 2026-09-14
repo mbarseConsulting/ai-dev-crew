@@ -21,82 +21,78 @@ partout, lier la bibliothèque dans son répertoire personnel :
 ```bash
 ln -s "$PWD/.claude/skills"/* ~/.claude/skills/
 ln -s "$PWD/.claude/agents"/* ~/.claude/agents/
+claude --agent agent-butler   # session pilotée par le butler
 ```
 
-**Sur site, sans installation et sans choix du modèle.** Aucun plugin à installer, aucun
-agent à déclarer : on ouvre le `SKILL.md` qui correspond au travail en cours et on le colle
-dans la conversation. C'est pour ça que chaque `SKILL.md` tient dans une fenêtre de collage
-— voir la règle de granularité dans [`docs/doctrine.md`](./docs/doctrine.md).
-
-En mode collage, les renvois par nom (« applique `testfix` ») sont des liens morts : le
-modèle n'a que ce qu'on lui a donné. Les fichiers d'entrée déclarent donc en tête ce qu'il
-faut coller avec eux.
+**Sur site, sans installation et sans choix du modèle.** Aucun plugin, aucun agent : on
+ouvre les fichiers du travail en cours et on les colle dans la conversation. Le routeur
+`crew/SKILL.md` liste les fichiers à coller ensemble. Chaque fichier tient
+dans une fenêtre de collage — voir la règle de granularité dans [`docs/doctrine.md`](./docs/doctrine.md).
 
 ## Les skills
 
-Cinq, indexées par **activité** — parce que l'activité est la seule chose que tu connaisses au moment où tu tapes la commande. Quelle techno tu touches se découvre *pendant*, donc ça se route, ça ne se tape pas.
+Deux. **Une skill ne nomme jamais une autre skill** : elle ne référence que ses propres
+fichiers, donc elle marche seule, collée ou chargée ([ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)).
 
-| Commande | Quand | Ce qu'elle porte |
+| Commande | Quand |
+| --- | --- |
+| `/crew` | développer, tester, relire, orchestrer, décider, veiller |
+| `/crew-project` | le domaine ou les noms maison ne se voient pas dans le code |
+
+`/crew` détecte la techno, choisit le rôle, et c'est tout :
+
+```
+/crew  →  techno détectée  →  agents/agent-dev.md  →  technos/java.md  →  references/…
+```
+
+| Flag | Agent | Rôle |
 | --- | --- | --- |
-| `/crew-dev` | implémenter ou corriger du code | la boucle dev, la table de détection, 4 personas, 10 références |
-| `/crew-review` | faire passer un gate formel | la procédure de revue, lentilles qualité et sécurité |
-| `/crew-test` | un test est rouge, ou il faut vérifier indépendamment | critère de tier, scénarios, suite complète, testfix |
-| `/crew-architecture` | une décision a de vrais arbitrages | discipline ADR, alternatives, réversibilité |
-| `/crew-watch` | les références risquent de vieillir | diff doctrinal, digest, une PR par fichier impacté |
+| *(aucun)* · `-d` | `agent-dev` | développe, écrit les tests |
+| `-t` | `agent-tester` | lance la suite complète, corrige les tests rouges |
+| `-r` | `agent-review` | relit qualité + sécurité, rend un verdict |
+| `-b` | `agent-butler` | qualifie, lance les autres rôles, tient les gates |
+| `-a` | `agent-butler` | tranche une décision à arbitrages, en dialogue |
+| `-w` | `agent-butler` | veille sur les règles de la bibliothèque |
 
-La composition est un **graphe**, pas un arbre — quatre arêtes, aucune n'excluant les autres :
+`-c` lance le rôle en subagent au lieu de le lire en place.
 
-```
-/crew-dev ─── skill
-│
-├─ ses références          conventions · layering · api-rest
-│                          persistence · kafka · ws     ← chargées selon le contexte
-│                          iot                          ← domaine, déclaré par le profil
-│
-└─ charge  agent-java ─── persona
-      ├─ ses références    java-spring · persistence · kafka · ws
-      └─ peut appeler      /crew-test · /architecture
-```
+**Garde d'indépendance** : `-t` ou `-r` dans la conversation qui a fait `-d` sur le même
+changement produit un « Self-check — not the gate », jamais un verdict.
 
-Les références se chargent **par contexte**, jamais par défaut : tu touches un DTO → `layering`, une entité → `persistence`, un endpoint → `api-rest`. La détection se fait sur des faits observables — extensions, fichiers de build, annotations — pas sur un jugement.
+Les références se chargent **par contexte**, jamais par défaut. Chaque techno liste les
+siennes ; la détection se fait sur le fichier de build **le plus proche** du fichier modifié.
 
-Une référence fusionnée porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique, et en cas de désaccord c'est `## Règles` qui a raison.**
+Une référence porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique.**
 
-**Rien de projet ni d'employeur ne vit dans cette bibliothèque.** Elle se balade à vie ; un projet est jetable. Le **profil projet** — domaine, stack, noms maison — vit dans ton espace à toi, hors de ce dépôt et hors du dépôt client, et il est *pointé*, jamais *contenu*. Seul `crew-project/templates/project-profile.md` est committé.
-
-C'est aussi lui qui rend le domaine connaissable : **la techno se détecte, le domaine se déclare.** `*.java` est un fait observable ; rien dans une arborescence ne dit qu'un projet fait de l'IoT.
-
-Et `/crew-watch` entretient tout ça : une passe périodique qui ne retient d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest dans `docs/watch/`, et ouvre **une PR par fichier impacté** — jamais de commit direct, parce que relire la PR est à la fois le garde-fou et le moment où on apprend.
+**Rien de projet ni d'employeur n'est committé.** Les fichiers projet vivent dans
+`crew-project/`, gitignorés, et se suppriment au départ du poste. **La techno se détecte,
+le domaine se déclare.**
 
 ## Les agents
 
-Quatre, dans `.claude/agents/`. Chacun ne se justifie que par ce qu'il ne peut pas faire ou
-par ce qu'il n'a pas vu :
+`.claude/agents/` contient 4 shells lançables. Chacun précharge `crew`, pointe vers son
+fichier dans `crew/agents/`, et n'apporte qu'un contexte vierge et des outils restreints :
 
-| Agent | Ce qu'il apporte hors de ses skills |
+| Shell | Outils retirés |
 | --- | --- |
-| `agent-crew-butler` | orchestration et gates utilisateur — non réductible à une skill ([ADR 0008](./docs/adr/0008-skills-first-doctrine.md)) |
-| `agent-crew-critic` | contexte vierge + aucun `Edit` : il ne peut pas réécrire ce qu'il relit |
-| `agent-crew-tester` | instance fraîche, indépendante de qui a écrit le code |
-| `agent-crew-dev` | il a lu la table de détection, donc il sait quelle persona dispatcher |
-| `agent-java` · `agent-angular` · `agent-node-bff` · `agent-python` | shells vers les personas : un contexte isolé par techno, dispatchables en parallèle sur fichiers disjoints |
-
-Coordination par **fichiers**, jamais par conversation entre agents, avec une validation
-utilisateur entre chaque phase :
+| `agent-dev` | `Agent` : il développe, il ne lance personne |
+| `agent-tester` | `Agent` |
+| `agent-review` | `Edit`, `Agent` : il ne peut pas réécrire ce qu'il relit |
+| `agent-butler` | `Edit` ; précharge aussi `crew-project` — `claude --agent agent-butler` |
 
 ```mermaid
 flowchart LR
-    U((user)) <--> B["butler : qualifie / architecture"]
+    U((user)) <--> B["butler : qualifie / décide"]
     B --> G1{gate}
-    G1 --> D["dev x N : implémente (craft skills)"]
-    D --> T["tester : suite complète, indépendante"]
-    T --> C["critic : qualité + sécurité"]
+    G1 --> D["agent-dev x N"]
+    D --> T["agent-tester"]
+    T --> C["agent-review"]
     C --> G2{gate}
     G2 --> U
 ```
 
-Le butler écrit dans `docs/adr/` et `docs/design/`, le critic dans `docs/reviews/` — du
-projet client. Les rapports du dev et du tester sont conversationnels, pas des fichiers.
+Le butler écrit dans `docs/adr/` et `docs/design/`, le review dans `docs/reviews/` — du
+projet client. Les rapports du dev et du tester sont conversationnels.
 
 ## Principes
 
@@ -106,9 +102,9 @@ Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitra
 
 - **Les skills sont le crew ; les agents en sont des instanciations** — [ADR 0008](./docs/adr/0008-skills-first-doctrine.md)
 - **Agents fins, skills épaisses** — aucune connaissance techno dans un agent — [ADR 0002](./docs/adr/0002-thin-agents-fat-skills.md)
-- **Une règle, un seul domicile** — une skill qui a besoin de la logique d'une autre la cite par son nom, ne la recopie jamais
+- **Une règle, un seul domicile ; une skill ne nomme aucune autre skill** — [ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)
 - **Outils restreints par rôle** — [ADR 0004](./docs/adr/0004-role-tool-allowlists.md)
-- **Preuve avant affirmation** — `dev-loop` attache la sortie réelle des commandes — [ADR 0005](./docs/adr/0005-verification-loop.md)
+- **Preuve avant affirmation** — `agent-dev` attache la sortie réelle des commandes — [ADR 0005](./docs/adr/0005-verification-loop.md)
 - **Les specs sont consommées, pas produites** — le crew lit `docs/adr/` et `docs/design/`, d'où qu'ils viennent (BMAD, Spec Kit, ou le butler lui-même)
 
 ## Layout
@@ -117,29 +113,21 @@ Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitra
 ai-dev-crew/
 ├── .claude/
 │   ├── skills/
-│   │   ├── crew-dev/      SKILL.md · agents/agent-{java,angular,node-bff,python}.md
-│   │   │                  references/{conventions,layering,api-rest,persistence,
-│   │   │                              kafka,ws,java-spring,node-bff,angular-patterns}.md
-│   │   ├── crew-review/   SKILL.md · references/{code-quality,security-review}.md
-│   │   ├── crew-test/     SKILL.md · references/testfix.md
-│   │   ├── architecture/  SKILL.md
-│   │   └── watch/         SKILL.md · references/sources.md
-│   └── agents/            4 rôles (butler, dev, tester, critic)
-│                          + 4 shells techno liés aux personas
-├── docs/
-│   ├── SPEC.md · doctrine.md · skill-manifest.csv
-│   └── adr/ · design/ · plans/ · reviews/ · templates/ · watch/
-├── scripts/
-├── CHANGELOG.md · CONTRIBUTING.md · README.md
-└── .attic/                vestiges de l'ère plugin, gitignoré
+│   │   ├── crew/           SKILL.md
+│   │   │                   agents/{agent-dev,agent-tester,agent-review,agent-butler}.md
+│   │   │                   technos/{java,angular,node-bff,python}.md
+│   │   │                   references/*.md (16)
+│   │   └── crew-project/   SKILL.md  (index.md · <projet>.md — gitignorés)
+│   └── agents/             4 shells lançables
+├── .githooks/pre-commit    lance scripts/crew-doctor.sh
+├── docs/                   SPEC.md · doctrine.md · skill-manifest.csv · adr/ · design/ · plans/ · reviews/ · watch/
+├── scripts/crew-doctor.sh  contrôle structurel
+└── CHANGELOG.md · CONTRIBUTING.md · README.md
 ```
 
 ## Chantiers ouverts
 
-Migration structurelle faite, alignement doctrinal en cours :
-
-- [ADR 0001](./docs/adr/0001-plugin-marketplace-format.md) est falsifié (son contexte suppose une installation chez le client) et doit être remplacé ; [ADR 0009](./docs/adr/0009-model-routing.md) ne vaut qu'en local, là où le modèle se choisit
-- `scripts/crew.sh` et `scripts/crew-doctor.sh` sont bâtis sur l'installation de plugins : inopérants en l'état
-- `angular-craft` recopie les règles de tier de `test-craft` — une seule doit les porter
-- `java-craft` reste à approfondir ; `layering-craft`, `api-rest-craft`, `kafka-craft`,
-  `ws-craft` et `node-bff-craft` sont des squelettes marqués `À PEUPLER`
+- `references/angular-patterns.md` est vide : `technos/angular.md` n'a pas encore de `## Pourquoi`
+- `technos/python.md` est parqué — conservé, pas maintenu
+- Le test de routage live ([ADR 0014](./docs/adr/0014-activity-first-skill-agent-pattern.md)) et les évaluations par mode restent à faire
+- [ADR 0009](./docs/adr/0009-model-routing.md) ne vaut qu'en local, là où le modèle se choisit

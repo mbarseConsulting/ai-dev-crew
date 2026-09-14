@@ -17,7 +17,7 @@ A generic router holding no project data. `index.md` maps a filesystem path to a
 
 - **Route:** read `index.md`, match the working directory against its paths (longest prefix first), load `<project>.md`, and say which project was loaded before anything else happens
 - No match → say so, name Create, stop. Never guess the project from a directory name
-- **Create:** ask the **domain first** — it is the one thing no file inspection can infer, and the reason this skill exists. Then the stack, then the conventions, from `templates/project.md`
+- **Create:** ask the **domain first** — it is the one thing no file inspection can infer, and the reason this skill exists. Then the stack, then the conventions, from `references/project-template.md`
 - Fill the convention rows by **reading the project's code**, not from memory
 - Leave a row empty rather than guessing: empty reads as unknown, wrong reads as decided
 - **Update:** edit the project file in place
@@ -35,7 +35,7 @@ A generic router holding no project data. `index.md` maps a filesystem path to a
 crew-project/
   SKILL.md            this router — permanent
   index.md            path → project — never committed
-  templates/project.md  — permanent
+  references/project-template.md  — permanent
   <project>.md        one file per project — never committed, deletable
 ```
 

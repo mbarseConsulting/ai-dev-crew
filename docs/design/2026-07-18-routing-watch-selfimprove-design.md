@@ -58,6 +58,8 @@
 
 ## Part 3 — ADR 0011: bounded self-improvement
 
+> **Not ratified.** ADR 0011 was never written; the number stays reserved and this part is not in force. `/crew-watch` is now `/crew -w` ([ADR 0016](../adr/0016-one-crew-skill-role-as-mode.md)).
+
 **Problem.** Agents working on the crew's own product must be *possible* but never *required*, on a subscription budget that primarily serves client missions.
 
 **Principle: dogfooding, not a fleet.** ai-dev-crew becomes a client project of its own crew — same canonical flow (butler → dev → tester → critic), same skills, same file contract. No new infrastructure: "agents work on my product" = a crew session pointed at the ai-dev-crew repo.

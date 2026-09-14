@@ -1,40 +1,23 @@
 #!/usr/bin/env bash
-# crew-doctor.sh — verify the ai-dev-crew marketplace and its plugins are usable
-# from the current machine / project.
+# crew-doctor.sh — structural check of the ai-dev-crew library.
 #
-# This script only READS Claude Code's local state (~/.claude/plugins/*.json,
-# ~/.claude/settings.json). It NEVER writes to any settings or plugin state
-# file — for every failed check it prints the exact command to run yourself.
+# Read-only. Checks what a reader cannot see at a glance and what breaks
+# silently in paste mode:
+#   1. every skill's frontmatter name matches its directory
+#   2. every path a skill cites (agents/, references/, modes/, templates/)
+#      exists relative to that skill's own directory
+#   3. every techno has a row in crew's detection table, every role agent a flag
+#   4. every crew reference is reachable from SKILL.md, an agent, or a techno
+#   5. no skill names another skill (ADR 0016)
+#   6. every launchable shell in .claude/agents/ preloads existing skills,
+#      cites no .claude/skills/ path, and has its agent in crew/agents/
+#   7. no stale vocabulary from earlier layouts survives in the library
+#
+# Exit status: 0 when every check passes, 1 otherwise.
 set -euo pipefail
 
-MARKETPLACE_NAME="ai-dev-crew"
-MARKETPLACE_PATH="$HOME/Projets/apps/ai-dev-crew"
-REQUIRED_PLUGINS=(crew-core crew-dev crew-tester crew-critic crew-front-angular crew-back-java crew-back-python)
-KNOWN_MARKETPLACES_FILE="$HOME/.claude/plugins/known_marketplaces.json"
-INSTALLED_PLUGINS_FILE="$HOME/.claude/plugins/installed_plugins.json"
-SETTINGS_FILE="$HOME/.claude/settings.json"
-
 usage() {
-  cat <<'EOF'
-Usage: crew-doctor.sh [--help]
-
-Checks that the ai-dev-crew marketplace and its plugins are installed and
-usable, and prints the exact remediation command for anything missing.
-
-Checks performed:
-  - claude CLI present, and its version
-  - ai-dev-crew marketplace known to Claude Code
-  - which crew-* plugins are installed, and at what scope
-  - CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set (optional — only needed for
-    crew.sh's parallel-review mode)
-  - BMAD installed in the current project via a _bmad/ directory (optional)
-
-This script is read-only: it never modifies any settings or plugin file.
-
-Exit status:
-  0  claude CLI is present AND the ai-dev-crew marketplace is registered
-  1  one of those two required checks failed
-EOF
+  sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
@@ -42,145 +25,102 @@ if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
   exit 0
 fi
 
-HAVE_JQ=0
-if command -v jq >/dev/null 2>&1; then
-  HAVE_JQ=1
-fi
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SKILLS="$ROOT/.claude/skills"
+AGENTS="$ROOT/.claude/agents"
+errors=0
 
-USE_COLOR=0
-if [ -t 1 ] && command -v tput >/dev/null 2>&1 && [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
-  USE_COLOR=1
-fi
-
-color() {
-  # color <code> <text>
-  if [ "$USE_COLOR" = "1" ]; then
-    printf '\033[%sm%s\033[0m' "$1" "$2"
-  else
-    printf '%s' "$2"
-  fi
+fail() {
+  printf '  ✗ %s\n' "$1"
+  errors=$((errors + 1))
 }
 
-REQUIRED_FAILS=0
-
-ok() {
-  echo "$(color '32' '✓') $1"
+section() {
+  printf '\n%s\n' "$1"
 }
 
-required_fail() {
-  echo "$(color '31' '✗') $1"
-  if [ -n "${2:-}" ]; then
-    echo "    → $2"
-  fi
-  REQUIRED_FAILS=$((REQUIRED_FAILS + 1))
+skill_names() {
+  for d in "$SKILLS"/*/; do basename "$d"; done
 }
 
-optional_fail() {
-  echo "$(color '33' '✗') $1 $(color '33' '(optional)')"
-  if [ -n "${2:-}" ]; then
-    echo "    → $2"
-  fi
-}
-
-echo "ai-dev-crew doctor"
-echo "=================="
-echo ""
-
-# --- claude CLI present -----------------------------------------------------
-if command -v claude >/dev/null 2>&1; then
-  CLAUDE_VERSION="$(claude --version 2>/dev/null || echo 'unknown version')"
-  ok "claude CLI present ($CLAUDE_VERSION)"
-else
-  required_fail "claude CLI not found on PATH" \
-    "install it: curl -fsSL https://claude.ai/install.sh | bash   (macOS/Linux/WSL; see https://code.claude.com/docs/en/quickstart for Homebrew/WinGet/apt/dnf/apk)"
-fi
-
-# --- marketplace known -------------------------------------------------------
-marketplace_known() {
-  [ -f "$KNOWN_MARKETPLACES_FILE" ] || return 1
-  if [ "$HAVE_JQ" = "1" ]; then
-    jq -e --arg name "$MARKETPLACE_NAME" 'has($name)' "$KNOWN_MARKETPLACES_FILE" >/dev/null 2>&1
-  else
-    grep -q "\"$MARKETPLACE_NAME\"[[:space:]]*:" "$KNOWN_MARKETPLACES_FILE"
-  fi
-}
-
-if marketplace_known; then
-  ok "ai-dev-crew marketplace registered"
-else
-  required_fail "ai-dev-crew marketplace not registered" \
-    "claude plugin marketplace add $MARKETPLACE_PATH"
-fi
-
-# --- installed plugins, with scope ------------------------------------------
-echo ""
-echo "Plugins:"
-
-plugin_scopes() {
-  # prints comma-separated scopes for "$1@$MARKETPLACE_NAME", empty if absent
-  local plugin_id="$1@$MARKETPLACE_NAME"
-  [ -f "$INSTALLED_PLUGINS_FILE" ] || return 0
-  if [ "$HAVE_JQ" = "1" ]; then
-    jq -r --arg id "$plugin_id" '.plugins[$id] // [] | map(.scope) | join(", ")' "$INSTALLED_PLUGINS_FILE" 2>/dev/null
-  else
-    if grep -q "\"$plugin_id\"" "$INSTALLED_PLUGINS_FILE"; then
-      echo "installed (scope unknown — install jq for detail)"
-    fi
-  fi
-}
-
-for plugin in "${REQUIRED_PLUGINS[@]}"; do
-  scopes="$(plugin_scopes "$plugin")"
-  if [ -n "$scopes" ]; then
-    ok "$plugin@$MARKETPLACE_NAME installed (scope: $scopes)"
-  else
-    optional_fail "$plugin@$MARKETPLACE_NAME not installed" \
-      "claude plugin install $plugin@$MARKETPLACE_NAME"
-  fi
+section "1. Skill names match their directory"
+for d in "$SKILLS"/*/; do
+  s="$(basename "$d")"
+  name="$(sed -n 's/^name: *//p' "$d/SKILL.md" | head -1)"
+  [ "$name" = "$s" ] || fail "$s/SKILL.md declares name '$name'"
 done
 
-echo ""
-echo "Optional extras:"
+section "2. Cited paths exist relative to their skill"
+for d in "$SKILLS"/*/; do
+  s="$(basename "$d")"
+  grep -rhoE '(agents|references|modes|templates)/[A-Za-z0-9._-]+\.md' "$d" 2>/dev/null | sort -u |
+    while read -r path; do
+      case "$path" in
+        *'{'*|*'<'*) continue ;;
+      esac
+      [ -f "$d/$path" ] || echo "$s: $path"
+    done || true
+done > "${TMPDIR:-/tmp}/crew-doctor.$$"
+while read -r line; do fail "dead path — $line"; done < "${TMPDIR:-/tmp}/crew-doctor.$$"
+rm -f "${TMPDIR:-/tmp}/crew-doctor.$$"
 
-# --- CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS -----------------------------------
-agent_teams_enabled() {
-  case "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" in
-    1 | true | TRUE | True) return 0 ;;
-  esac
-  [ -f "$SETTINGS_FILE" ] || return 1
-  if [ "$HAVE_JQ" = "1" ]; then
-    local val
-    val="$(jq -r '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS // empty' "$SETTINGS_FILE" 2>/dev/null)"
-    case "$val" in
-      1 | true | TRUE | True) return 0 ;;
-      *) return 1 ;;
-    esac
-  else
-    grep -Eq '"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"[[:space:]]*:[[:space:]]*"?(1|true)"?' "$SETTINGS_FILE"
-  fi
-}
+CREW="$SKILLS/crew"
+if [ -d "$CREW" ]; then
+  section "3. Every techno has a detection row, every role agent a flag"
+  for p in "$CREW"/technos/*.md; do
+    rel="technos/$(basename "$p")"
+    grep -q "| \`$rel\` |" "$CREW/SKILL.md" || fail "no detection row for $rel"
+  done
+  for p in "$CREW"/agents/*.md; do
+    rel="agents/$(basename "$p")"
+    grep -q "| \`$rel\` |" "$CREW/SKILL.md" || fail "no flag for $rel"
+  done
 
-if agent_teams_enabled; then
-  ok "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS enabled"
-else
-  optional_fail "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS not set — needed only for parallel-review mode (crew.sh option 4)" \
-    "export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1   (or add \"env\": {\"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS\": \"1\"} to ~/.claude/settings.json yourself)"
+  section "4. Every reference is reachable"
+  for r in "$CREW"/references/*.md; do
+    rel="references/$(basename "$r")"
+    grep -rqF "$rel" "$CREW/SKILL.md" "$CREW/agents" "$CREW/technos" || fail "unreachable $rel"
+  done
 fi
 
-# --- BMAD in current project -------------------------------------------------
-if [ -d "_bmad" ]; then
-  ok "BMAD installed in the current project (_bmad/ found)"
-else
-  optional_fail "BMAD not installed in the current project" \
-    "npx bmad-method install   (run at the project root; interactive)"
+section "5. No skill names another skill"
+for d in "$SKILLS"/*/; do
+  s="$(basename "$d")"
+  for other in $(skill_names); do
+    [ "$other" = "$s" ] && continue
+    # a skill name as a whole token: not glued to a letter, digit or hyphen
+    if grep -rnE "(^|[^A-Za-z0-9-])$other([^A-Za-z0-9-]|$)" "$d" >/dev/null 2>&1; then
+      grep -rnE "(^|[^A-Za-z0-9-])$other([^A-Za-z0-9-]|$)" "$d" | head -3 |
+        while read -r hit; do echo "$s names $other — ${hit#$d}"; done || true
+    fi
+  done
+done > "${TMPDIR:-/tmp}/crew-doctor.$$"
+while read -r line; do fail "$line"; done < "${TMPDIR:-/tmp}/crew-doctor.$$"
+rm -f "${TMPDIR:-/tmp}/crew-doctor.$$"
+
+section "6. Agents preload existing skills and cite no repository path"
+for a in "$AGENTS"/*.md; do
+  n="$(basename "$a" .md)"
+  sed -n '/^skills:/,/^[a-z]*:/p' "$a" | sed -n 's/^ *- *//p' |
+    while read -r sk; do
+      [ -f "$SKILLS/$sk/SKILL.md" ] || echo "$n preloads missing skill '$sk'"
+    done || true
+  if grep -q '\.claude/skills/' "$a"; then echo "$n cites a .claude/skills/ path"; fi
+  [ -f "$CREW/agents/$n.md" ] || echo "$n has no agent at crew/agents/$n.md"
+done > "${TMPDIR:-/tmp}/crew-doctor.$$" || true
+while read -r line; do fail "$line"; done < "${TMPDIR:-/tmp}/crew-doctor.$$"
+rm -f "${TMPDIR:-/tmp}/crew-doctor.$$"
+
+section "7. No stale vocabulary"
+STALE='modes/|agent-crew-|persona|dev-loop|test-craft|[a-z]+-craft\b|best-practices\.md|house-rules\.md|project-profile|profil projet|independent test pass|development loop|formal review gate'
+if grep -rnE "$STALE" "$ROOT/.claude" >/dev/null 2>&1; then
+  while read -r hit; do fail "stale — ${hit#$ROOT/}"; done < <(grep -rnE "$STALE" "$ROOT/.claude")
 fi
 
-echo ""
-echo "=================="
-if [ "$REQUIRED_FAILS" -eq 0 ]; then
-  echo "$(color '32' 'All required checks passed.')"
+printf '\n'
+if [ "$errors" -eq 0 ]; then
+  echo "crew-doctor: all checks passed"
   exit 0
-else
-  echo "$(color '31' "$REQUIRED_FAILS required check(s) failed.")" "See the remediation commands above."
-  exit 1
 fi
+echo "crew-doctor: $errors error(s)"
+exit 1

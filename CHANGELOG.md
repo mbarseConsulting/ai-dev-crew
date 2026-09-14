@@ -1,0 +1,93 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the repository follows [Semantic Versioning](https://semver.org/) as a whole. Entries dated before the move to `.claude/` refer to the former per-plugin versioning and are kept as an accurate record of what happened; they are not rewritten.
+
+## [Unreleased]
+
+### Changed
+
+- **Sortie du format plugin : la bibliothèque remplace le marketplace.** Les 10 skills et les 4 agents passent de `plugins/crew-*/` à `.claude/skills/` et `.claude/agents/`, auto-découverts par Claude Code sans installation. Les 7 `plugin.json` et `.claude-plugin/marketplace.json` sont retirés. Motif : le contexte d'usage réel interdit l'installation de plugins et le choix du modèle, ce qui falsifie le contexte de [ADR 0001](./docs/adr/0001-plugin-marketplace-format.md) — un seul consommateur, aucun client installateur. La profondeur d'accès à une skill passe de 4 niveaux à 3.
+- **Six nouvelles skills**, sur deux axes transverses au langage : `layering-craft` et `persistence-craft` (structure), `api-rest-craft`, `kafka-craft` et `ws-craft` (contrats exposés), plus `node-bff-craft` qui comble un trou — le BFF Node était exclu à la fois de `java-craft` et d'`angular-craft`. `persistence-craft` est peuplée et sert de référence de format ; les cinq autres sont des squelettes marqués `À PEUPLER`.
+- **Convention `references/` par craft skill** : `best-practices.md` (le pattern et sa raison, publiable, maintenu par veille) et `house-rules.md` (noms et choix propres à l'employeur, **gitignoré** — seul `docs/templates/house-rules.template.md` est committé, pour éviter toute fuite de conventions internes).
+- **Doctrine d'arbitrage** consignée dans [`docs/doctrine.md`](./docs/doctrine.md) : placement d'une règle (l'axe qui survit à un changement de techno), granularité d'un fichier (ce qui tient dans une fenêtre de collage), et existence d'un agent (ce qu'il ne peut pas faire, ou ce qu'il n'a pas vu).
+- **BMAD sorti du dépôt** : 490 fichiers et ~4,3 Mo, non suivis par git, dupliqués en interne (`plugins/.claude/skills` et `plugins/.agents/skills` strictement identiques) et déjà disponibles ailleurs. Il était par ailleurs scopé à `plugins/`, que la migration a vidé du travail du crew. Le répertoire `plugins/` disparaît entièrement ; `doctrine.md`, `skill-manifest.csv` et le template remontent dans `docs/`.
+- `README.md` réécrit : le marketplace, les procédures `/plugin install`, le pinning de version et le layout décrivaient une organisation qui n'existe plus.
+- Tout ce qui est retiré est déplacé dans `.attic/` (gitignoré), non supprimé, le temps de valider la migration.
+- **Skills-first doctrine** ([ADR 0008](./docs/adr/0008-skills-first-doctrine.md)): `agent-crew-dev` and `agent-crew-critic` slimmed to shells — their MUST/NEVER content moved into `dev-loop`/`testfix` and `code-quality`/`security-review` respectively, so the same skills loaded solo (no agent, no dispatch) now produce identical behavior. `agent-crew-butler` reviewed and kept as the one deliberate exception (documented in its own file and in `docs/SPEC.md`): routing and multi-phase user gates need real dispatch mechanics no skill can reproduce.
+- `code-quality`/`security-review` OUTPUT reconciled with the doctrine above: both skills now state their own `docs/reviews/<slug>.md` destination again, framed skill-first ("write this yourself in solo mode, or contribute this section when `agent-crew-critic` runs both") rather than agent-first. This intentionally revises the earlier N8 audit fix (which had removed the path to keep the skill "portable") — the reconciliation is: state the destination on the skill's own terms, not phrased as "feeds into agent-crew-critic," so solo mode gets a real destination without re-introducing a crew-internal assumption.
+- `code-quality` gains a `docs/adr/` conformance check in its MUST (previously only stated on the now-slimmed `agent-crew-critic`); `security-review` gains an escalate-critical-findings-first MUST; both gain a never-silently-downgrade-a-finding NEVER.
+- `angular-craft` enriched with generic Angular/TypeScript/RxJS/accessibility/testing rules (OnPush, standalone, built-in control flow, `takeUntilDestroyed`, no `any`, `afterNextRender`, keyboard parity with `(click)`, Vitest-vs-Cypress tier guidance) absorbed from the user's personal best-practices reference; client-specific items (a particular UI kit, monorepo tool, i18n file naming) were deliberately excluded — those belong in the client project's own `CLAUDE.md`.
+- `scripts/crew-doctor.sh`: `REQUIRED_PLUGINS` gains `crew-tester`.
+- `scripts/crew.sh`: new menu option "6) Test verification (independent)"; choice 5 (full flow) now includes an `agent-crew-tester` verification phase when `crew-tester` is installed, folded into the existing sanity-check gate rather than adding a new phase.
+- `.claude-plugin/marketplace.json`: 7 plugin entries (adds `crew-tester`); `crew-core`/`crew-dev`/`crew-critic` descriptions reframed as shells for their skills.
+- `plugin.json` version bumps: `crew-core` `0.2.0` → `0.3.0`, `crew-dev` `0.1.0` → `0.2.0`, `crew-critic` `0.1.0` → `0.2.0`, `crew-front-angular` `0.2.0` → `0.3.0`.
+- `docs/SPEC.md`: new unnumbered "Doctrine" section ("the crew is skills + the file contract"); §1 covers 4 agents (adds `agent-crew-tester`) reframed with shell/instantiation language; §3 skills catalog grows to 10 entries; §4 file contract's `docs/reviews/` row reframed as written by the skills themselves, not exclusively by the agent.
+- README: overview, plugins table, quickstart, "How the crew collaborates" prose, "Design principles", and the exhaustive "How it all fits together" diagram all updated for the 4-agent/skills-first/tester model (diagram: `agent-crew-tester` added as a dashed/optional node, keeping the existing 3-gate structure rather than adding a 4th phase — see [Working with the crew](./README.md#working-with-the-crew)).
+- **v2 restructure: "thin agents / fat skills"** (see [`docs/SPEC.md`](./docs/SPEC.md) and [`docs/adr/`](./docs/adr/) for the full rationale). Old → new mapping:
+  - `agent-crew-reviewer` (`crew-core`) + `agent-crew-security` (`crew-security`) → merged into `agent-crew-critic` (new `crew-critic` plugin), with `code-quality` and `security-review` as lenses on the same merged report
+  - `agent-crew-architect` (`crew-architect`) → folded into `agent-crew-butler` (`crew-core`), which now holds architecture decisions as a dialogue with the user via the `architecture` skill (moved from `crew-architect` to `crew-core`, content unchanged)
+  - `agent-crew-angular` (`crew-front-angular`) → deleted; its technology guardrails absorbed into the `angular-craft` skill, now implemented by the generic `agent-crew-dev` (new `crew-dev` plugin)
+  - `crew-core`, `crew-front-angular`: `plugin.json` bumped `0.1.0` → `0.2.0` (breaking restructure)
+- `scripts/crew-doctor.sh`: `REQUIRED_PLUGINS` updated to the 6 v2 plugin names
+- `scripts/crew.sh`: menu and kickoff prompts rewritten around butler/dev/critic; new default option "0) Talk to the butler"; parallel review now spawns `agent-crew-critic` twice (quality lens / security lens) instead of two different agents
+- README: plugins table, quickstart, "How the crew collaborates" flow and mermaid diagram, and the agent-teams example all updated to the butler/dev/critic model; "Planned" rows removed now that all 6 plugins are implemented
+
+### Added
+
+- [`docs/adr/0008-skills-first-doctrine.md`](./docs/adr/0008-skills-first-doctrine.md): the doctrine behind this round of changes — skills carry all behavior, agents are thin instantiations, solo mode is first-class, orchestration is the one explicit non-skillable limit.
+- `crew-tester` plugin (`0.1.0`, new): `agent-crew-tester` shell + `test-craft` skill — unit-vs-e2e tier decisions, missing end-to-end scenario design, and independent full-suite verification run by a fresh instance separate from the implementing `agent-crew-dev` instance.
+- `dev-loop` skill (`crew-dev`): the development procedure — scope and acceptance checklist, project-command detection (package manager, typecheck, tests, linter, monorepo scoping), the develop/compile/test loop with a bounded 3-cycle repair budget, evidence-based reporting. Extracted from `agent-crew-dev`'s prior MUST/NEVER and merged with the user's personal `dev` skill; hands off to `testfix` by name for classify-and-fix rather than duplicating them.
+- `testfix` skill (`crew-dev`): absorbed from the user's personal `testfix` skill. Fixed a real bug on absorption — its `allowed-tools` was `Read` only, contradicting a skill that runs tests (`Bash`) and fixes code (`Edit`); now `Read, Bash, Edit, Glob, Grep`. Kept the 6-step detect/scope/run/parse/classify/verify loop; sole home of the source-vs-test classify rules and the absolute rules (never widen an assertion, never hide a bug in the source).
+- `crew-dev` plugin (`0.1.0`): `agent-crew-dev`, the generic technology-agnostic developer with an evidence-based verification loop; no `tools:` restriction (needs the full toolset to implement)
+- `crew-critic` plugin (`0.1.0`): `agent-crew-critic`, merging quality and security review into one findings report; `tools:` allowlist excludes `Edit` entirely (see the Fixed section below for the honest framing of what this does and doesn't guarantee against `Bash`)
+- `agent-crew-butler` (`crew-core`, `0.2.0`): crew entry point; `tools:` allowlist excludes `Write`/`Edit` entirely (can't implement code even if instructed to)
+- `java-craft` skill (new `crew-back-java` plugin, `0.1.0`) and `python-craft` skill (new `crew-back-python` plugin, `0.1.0`): starter conventions, same TODO-placeholder pattern as `angular-craft`
+- Per-role `tools:` frontmatter allowlists as mechanical enforcement — see [`docs/adr/0004-role-tool-allowlists.md`](./docs/adr/0004-role-tool-allowlists.md)
+- Verification loop: `agent-crew-dev` must attach real execution evidence before claiming a task done — see [`docs/adr/0005-verification-loop.md`](./docs/adr/0005-verification-loop.md)
+- [`docs/SPEC.md`](./docs/SPEC.md): the crew's own authoritative specification (roles, canonical flow, skills catalog, file-handoff contract, upstream-specs interface)
+- [`docs/adr/`](./docs/adr/): 6 ADRs recording the decisions behind this restructure — plugin marketplace format, thin-agents/fat-skills, butler/critic separation of duties, role tool allowlists, the verification loop, and what's deliberately deferred to v2.1
+- [`docs/adr/0007-butler-topology-and-write-scope.md`](./docs/adr/0007-butler-topology-and-write-scope.md): settles the butler's main-session topology, adds scoped `Write` to its `tools:`, and records the `Bash`-bypass gap honestly instead of overclaiming mechanical enforcement
+- README "Design principles" section linking to `docs/SPEC.md` and `docs/adr/`, with a v2.1 roadmap note (enforcement hooks, worktree mode)
+- README "How it all fits together": one exhaustive mermaid diagram plus a small mode-comparison diagram, covering topology, tool allowlists, the full file contract, and both execution modes side by side; referenced (not duplicated) from `docs/SPEC.md` §2
+
+### Fixed
+
+Contract defects found by an adversarial audit ([`docs/reviews/audit-v2-agents.md`](./docs/reviews/audit-v2-agents.md)); finding IDs in parentheses:
+
+- `agent-crew-butler` had no `Write` tool despite `docs/SPEC.md` naming it the sole writer of `docs/adr/` and `docs/design/` (B1, B3). Fixed: `tools:` gains `Write`, scoped by a NEVER bullet to those two paths only ([ADR 0007](./docs/adr/0007-butler-topology-and-write-scope.md)).
+- ADR 0004's "mechanically impossible" claim was false while `Bash` (which can write files) remained in the butler's and critic's allowlists (B2, N5). Fixed: reworded to an honest claim scoped to `Edit` specifically; the `Bash` bypass is now a recorded known gap, closed by a new NEVER bullet on both agents ("never use Bash to create or modify files").
+- The `architecture` skill never named a destination path for the ADRs/design notes it's supposed to anchor (B4). Fixed: its MUST now names `docs/adr/<slug>.md` and `docs/design/<slug>.md` explicitly.
+- `crew.sh` choice 1 (both variants) auto-chained implementation straight into the critic's review, violating the "phases never auto-chain" rule in `docs/SPEC.md` §2 (B5). Fixed: both variants now insert an explicit STOP before dispatching `agent-crew-critic`.
+- `docs/SPEC.md` §4 mislabeled the butler's read of `docs/reviews/` as its "sanity check"; the real sanity check runs earlier, on `agent-crew-dev`'s conversational evidence report, which no file in the table carried (S1). Fixed: relabeled to "relaying the verdict"; the table now states the evidence report is conversational-only.
+- SPEC said the butler "routes" (implying subagent dispatch); README said "the main session is the orchestrator" — two different topologies, and a dispatched-subagent butler can't hold a live dialogue (S2, S4). Fixed: settled in ADR 0007 as "butler = main-session persona", written into `docs/SPEC.md` §2 and into the agent definition itself.
+- ADR 0003's "two distinct checkpoints" claim was aspirational — no `crew.sh` flow ever exercised the butler's sanity check (S3). Fixed: `crew.sh` choice 5 now routes Phase 2's output through the butler's sanity check, with a STOP, before Phase 3's critic gate (also closes S13).
+- `agent-crew-dev` assumed `dev-conventions` (shipped in the separate `crew-core` plugin) is always present (S5). Fixed: added a flag-and-fallback rule matching the existing craft-skill pattern.
+- The verification loop had no failure path (S6). Fixed: added a MUST for reporting failing output verbatim and escalating after two failed fix attempts, plus a matching NEVER against "should pass now" claims.
+- `agent-crew-critic`'s ROLE claimed the lenses are inseparable while OPTIONS offered single-lens modes, OUTPUT mandated a two-section report even in single-lens mode, and parallel mode had two `Write`-capable instances that could race to the same file (S7, S8, S9). Fixed: reworded ROLE/OPTIONS to "both lenses by default, a single lens only when explicitly instructed"; OUTPUT now states single-lens reports contain only that section; parallel mode designates the quality-lens instance as the sole report writer.
+- `dev-conventions`' TDD rule had a self-certifying "when practical" escape hatch (S10). Fixed: tightened to default-test-first with a same-change fallback, no hedge.
+- `security-review` advertised "OWASP Top 10" but enumerated 9 classes, missing Cryptographic Failures (A02:2021) (S11). Fixed: added to the enumeration.
+- The three craft skills' "review mode" had no crew member authorized to use it (S12, N1). Fixed: `agent-crew-critic` (conventions-reference lens) and `agent-crew-dev` (self-check) are now named as the only authorized consumers, in the skills and in `docs/SPEC.md` §3.
+- `crew.sh` choice 0 could route to `agent-crew-critic` without requiring that plugin be installed (S14). Fixed: the kickoff prompt now tells the butler to say so and name the plugin instead of proceeding — a hard `require_plugins` gate would work against choice 0's open-ended "figure out what's needed" purpose.
+- Nitpicks also applied: sanity-check note explicitly accepted as conversational/ephemeral (N2); `agent-crew-dev` gets a NEVER against dispatching other crew agents itself (N3); `agent-crew-critic` gets an explicit escalation mechanism, report + first line of return message (N4); `architecture` skill's "significant decisions" replaced with its own observable triggers (N6); `code-quality`/`security-review` OUTPUT no longer hardcodes the critic's `docs/reviews/` path, keeping the skills portable (N8); craft skills' `<!-- TODO -->` placeholder reworded to "Customization hook — populate per client" (N9).
+- Skipped, with reason: N7 (dev-conventions/code-quality trigger overlap) — the audit itself judged this acceptable ("sharpen if misloads are observed"); no change made.
+
+### Removed
+
+- `crew-architect` plugin (agent + `architecture` skill) — skill moved to `crew-core`, agent folded into `agent-crew-butler`
+- `crew-security` plugin (agent + `security-review` skill) — skill moved to `crew-critic`, agent folded into `agent-crew-critic`
+- `agent-crew-reviewer` (was in `crew-core`) — folded into `agent-crew-critic`
+- `agent-crew-angular` (was in `crew-front-angular`) — deleted; guardrails absorbed into the `angular-craft` skill, now used by the generic `agent-crew-dev`
+- `docs/security/` file-handoff path — security findings now live in the Security section of the merged `docs/reviews/` report
+
+## [0.1.0] - 2026-07-14
+
+### Added
+
+- Initial crew skeleton: marketplace manifest (`.claude-plugin/marketplace.json`) declaring four plugins.
+- `crew-core` (0.1.0): `agent-crew-reviewer` code-review/quality-gate agent and `dev-conventions` skill (git conventions, semver, changelog discipline, TDD baseline).
+- `crew-architect` (0.1.0): `agent-crew-architect` software architecture agent and `architecture` skill (system design, ADRs, tech choices, repo layout).
+- `crew-security` (0.1.0): `agent-crew-security` security review agent and `security-review` skill (OWASP Top 10, secrets handling, dependency audit, authz patterns).
+- `crew-front-angular` (0.1.0): `agent-crew-angular` Angular front-end development agent and `angular-craft` skill (modern Angular best practices, with reference placeholders pending user-supplied material).
+- README with install instructions, plugin roadmap, and release discipline.

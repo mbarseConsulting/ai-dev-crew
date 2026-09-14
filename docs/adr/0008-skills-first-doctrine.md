@@ -1,0 +1,29 @@
+# 0008 — Skills-first doctrine: agents are instantiations, not the crew
+
+## Context
+
+The crew's owner works solo at client sites, often without any of these plugins installed — just a plain Claude Code session and her own judgment ("I am the agent"). Her working principle: she must be able to do everything the crew does with skills alone, loaded directly in that plain session, with no agent dispatch involved. An agent — `agent-crew-dev`, `agent-crew-critic`, a future `agent-crew-tester` — is not a separate capability; it's an instantiation of "me as AI" playing one of those roles.
+
+Before this ADR, behavior lived partly in agents (MUST/NEVER lists on `agent-crew-dev` and `agent-crew-critic`) and partly in skills (`code-quality`, `security-review`, the craft skills). A solo session loading `code-quality` and `security-review` directly got the review lenses, but not `agent-crew-dev`'s verification loop, technology-detection rule, or evidence discipline — none of that was in a skill. Solo mode was a second-class path that happened to work for review but not for development. Separately, absorbing the user's personal `dev` and `testfix` skills into this repo surfaced a concrete failure mode of the alternative (duplicating behavior instead of centralizing it): `dev`'s Step 5 carried a verbatim copy of `testfix`'s classify-and-fix rules, which is exactly the kind of drift risk a single source of truth is meant to prevent.
+
+## Decision
+
+**Skills carry all behavior. Agents become shells.** An agent definition is reduced to: the `[TAG]` display line, a short ROLE description of the persona, `OPTIONS`, `tools:`, and — as its actual content — the list of skills it loads by name. It has no MUST/NEVER of its own beyond what genuinely cannot be expressed as a skill (see the limit, below). Skills are the portable, reusable unit; agents are one way of invoking them, not the only way.
+
+**Solo mode is first-class, not a side effect.** Anyone can load `dev-loop`, `code-quality`, `security-review`, `test-craft`, or any craft skill directly in a plain session and get the same behavior an agent dispatch would have produced — same steps, same guardrails, same destination paths. To make this real, **the file contract lives in the skills' own OUTPUT sections** (where to write ADRs, findings, etc.), not only in an agent's OUTPUT. A skill's output contract must make sense read on its own, with no agent in the loop.
+
+**Duplication is the failure mode, not the safety net.** Where a procedure needs another skill's logic (e.g. `dev-loop` needing `testfix`'s classify-and-fix rules when a test fails), it references that skill **by name** and does not restate its rules. One skill owns each rule; everything else points at it.
+
+**The explicit limit: orchestration is not skillable.** Routing ("what does this need"), briefing multiple dispatched instances, holding a user gate between phases dispatched to different subagents, and coordinating parallel instances (e.g. two `agent-crew-critic` teammates) all require actual dispatch mechanics (the `Agent` tool, multi-instance state, a live multi-turn conversation) that a skill loaded inside one session or one subagent invocation cannot reproduce. `agent-crew-butler` is therefore **not** a shell — it keeps its dispatch/gating behavior as genuine agent-level content. This is a deliberate, bounded exception, not a gap: **the butler is optional convenience, never a required capability.** Nothing the crew does requires the butler; a solo user can run every phase herself, in order, by loading the same skills the butler would have dispatched agents to use.
+
+## Alternatives considered
+
+- **Keep behavior in agents, treat skills as thin optional sugar.** Rejected: this is the status quo the audit and this doctrine shift are correcting. It makes solo mode second-class and ties every guardrail to whether an agent happens to be dispatched.
+- **Duplicate behavior in both the agent and the skill, for redundancy.** Rejected on the evidence in hand: the `dev`/`testfix` classify-rules duplication in the source material is a live example of exactly the drift risk this avoids. Two copies of a rule are a single source of truth waiting to disagree with itself.
+- **Make the butler skillable too — a "routing" skill anyone could load.** Rejected: routing needs the `Agent` tool and cross-dispatch state (which subagent is currently running, what phase the workflow is in) that a skill, evaluated inside a single session or a single subagent turn, cannot hold. A "routing skill" loaded solo would have nothing to route *to* — there's no dispatch mechanism available outside an agent context. This is recorded as a real, structural limit, not deferred work.
+
+## Consequences
+
+The skills catalog becomes the crew's true center of gravity: `dev-loop` and `testfix` (both `crew-dev`) and `test-craft` (new `crew-tester`) join `dev-conventions`, `architecture`, `code-quality`, `security-review`, and the three craft skills — ten skills carrying all procedural and behavioral authority. `agent-crew-dev` and `agent-crew-critic` shrink to shells whose entire "behavior" section is a pointer to which skills to load; `agent-crew-butler` does not shrink, and that asymmetry is intentional and now documented rather than accidental.
+
+Two prices are paid deliberately. First, less redundancy: previously an agent restated some of its skill's rules in its own words, which meant a corrupted or missing skill file still left a weaker copy in the agent. After this ADR, the skill is the only copy — consistent with how this repo already treats other known gaps (ADR 0004, ADR 0005) rather than a new risk introduced here. Second, `docs/SPEC.md`'s framing changes: the skills plus the file contract *are* the crew; agents are convenience instantiations of a role a human could equally well play by hand, one skill at a time.

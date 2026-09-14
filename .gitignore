@@ -37,3 +37,9 @@ local/*
 
 # Configuration locale Claude Code
 .claude/settings.local.json
+
+# Vestiges de l'ère plugin — à supprimer une fois la migration validée
+.attic/
+
+# Conventions employeur : ne JAMAIS committer (fuite interne)
+.claude/skills/**/references/house-rules.md

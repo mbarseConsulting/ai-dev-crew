@@ -1,0 +1,17 @@
+skill,famille,statut,references
+dev-loop,procedure,migre,non
+testfix,procedure,migre,non
+test-craft,procedure,migre,non
+code-quality,procedure,migre,non
+security-review,procedure,migre,non
+dev-conventions,procedure,migre,non
+architecture,procedure,migre,non
+java-craft,langage-framework,a-approfondir,oui
+angular-craft,langage-framework,migre,oui
+node-bff-craft,langage-framework,squelette,oui
+python-craft,langage-framework,parke,non
+layering-craft,structure,squelette,oui
+persistence-craft,structure,peuple,oui
+api-rest-craft,contrat,squelette,oui
+kafka-craft,contrat,squelette,oui
+ws-craft,contrat,squelette,oui

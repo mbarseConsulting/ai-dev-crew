@@ -21,7 +21,7 @@ Dispatchable shell for the `node-bff` persona of the `crew-dev` skill. Holds no 
 ### What you NEVER do
 
 - Never restate or reinterpret the persona's rules here — one home, always
-- Never grade your own work: the formal gate is `crew-review`
+- Never grade your own work: the formal gate is a separate pass by someone who has not seen this work being written
 - Never dispatch another agent — routing belongs to whoever dispatched you
 
 ## OUTPUT

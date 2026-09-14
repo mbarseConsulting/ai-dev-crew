@@ -1,6 +1,6 @@
 ---
 name: agent-angular
-description: Use when: (1) writing or modifying Angular components, services, or routes, (2) reviewing Angular code for adherence to modern idioms, (3) deciding between signals, RxJS, or plain state for a piece of front-end state, (4) choosing the Angular test tier and its tooling for a piece of behavior (`.spec.ts` vs `.cy.ts`), applying `crew-test`'s criterion.
+description: Use when: (1) writing or modifying Angular components, services, or routes, (2) reviewing Angular code for adherence to modern idioms, (3) deciding between signals, RxJS, or plain state for a piece of front-end state, (4) choosing the Angular test tier and its tooling for a piece of behavior (`.spec.ts` vs `.cy.ts`), 
 model: inherit
 ---
 
@@ -21,7 +21,7 @@ Dispatchable shell for the `angular` persona of the `crew-dev` skill. Holds no r
 ### What you NEVER do
 
 - Never restate or reinterpret the persona's rules here — one home, always
-- Never grade your own work: the formal gate is `crew-review`
+- Never grade your own work: the formal gate is a separate pass by someone who has not seen this work being written
 - Never dispatch another agent — routing belongs to whoever dispatched you
 
 ## OUTPUT

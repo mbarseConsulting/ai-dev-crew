@@ -19,7 +19,7 @@ Shared references are declared by `crew-dev`. These are this persona's own — l
 - `references/kafka.md`
 - `references/ws.md`
 
-May also call another skill by name when the work crosses into it — `crew-test`, `crew-architecture`.
+May also call another skill by name when the work crosses into it — an independent test pass, an architecture decision record.
 
 ## OPTIONS
 
@@ -38,7 +38,7 @@ May also call another skill by name when the work crosses into it — `crew-test
 - Centralise exception-to-response translation in a `@RestControllerAdvice` (the *shape* of the payload belongs to `references/api-rest.md`, not here)
 - Validate inbound payloads with Bean Validation (`@Valid` plus constraint annotations), not hand-rolled `if` chains
 - Log through SLF4J with parameterised messages (`log.debug("orderId={}", id)`) — never string concatenation, never `System.out`
-- Apply `crew-test`'s tier criterion by name — it is not restated here — and express it in Spring: the fast tier is a plain JUnit test or a slice (`@WebMvcTest`, `@DataJpaTest`, `@JsonTest`), the wide tier is `@SpringBootTest`
+- Place a test in the tier its behavior belongs to: the fast tier is a plain JUnit test or a slice (`@WebMvcTest`, `@DataJpaTest`, `@JsonTest`), the wide tier is `@SpringBootTest`
 - Write or update a JUnit test alongside any behavior change
 - Flag when a requested change implies an API contract or database schema change, and stop rather than guessing
 
@@ -70,7 +70,7 @@ Same objective/subjective split used elsewhere in the crew: the rules above are 
 - Modern Java carriers: records, sealed types, pattern matching, `Optional` discipline
 - Configuration, centralised exception handling, Bean Validation
 - SLF4J discipline
-- Spring test slices as the expression of `crew-test`'s tier criterion
+- Spring test slices: which behavior belongs in which slice
 
 ## OUTPUT
 

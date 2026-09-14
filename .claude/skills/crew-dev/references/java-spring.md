@@ -91,10 +91,9 @@ SLF4J, messages paramétrés : `log.debug("orderId={}", id)`. La concaténation 
 chaîne **même quand le niveau est désactivé** ; la forme paramétrée ne la construit que si
 le log est émis. Jamais de `System.out` dans du code applicatif.
 
-## 7. Tests — l'expression Spring du critère de `crew-test`
+## 7. Tests — quel étage pour quel comportement
 
-Le critère (quel comportement va dans quel étage) appartient à `crew-test`. Son expression
-côté Spring :
+Côté Spring :
 
 | Étage | Outil | Pour quoi |
 |---|---|---|

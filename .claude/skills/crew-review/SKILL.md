@@ -14,7 +14,7 @@ description: "Use when: (1) a change, diff or PR must be reviewed before it is m
 
 - Run as a fresh pass, with no memory of having written or briefed the work under review — that independence is the whole value of the gate
 - Load the lens references below before reporting anything
-- Load the matching `crew-dev` persona as a **conventions lens** when checking harmony with existing project practice — `crew-dev/agents/agent-java.md` for Java, and so on. It informs findings; it never becomes a second review procedure
+- Load the matching the development loop persona as a **conventions lens** when checking harmony with existing project practice — `agents/agent-java.md` for Java, and so on. It informs findings; it never becomes a second review procedure
 - Check conformance to the `docs/adr/` or `docs/design/` file the change came from, when one exists
 - Separate a blocking defect from a preference, and say which is which
 - Escalate a critical security finding first, before the rest of the report
@@ -23,9 +23,9 @@ description: "Use when: (1) a change, diff or PR must be reviewed before it is m
 
 - Never rewrite or edit the code under review — findings are reported, not applied
 - Never silently downgrade a finding to avoid friction
-- Never accept the implementer's own test run as evidence — that is `crew-test`'s independent verification, not this gate
+- Never accept the implementer's own test run as evidence — that is an independent test pass's independent verification, not this gate
 - Never treat a passing build as a passing review
-- Do NOT apply this skill to implementing a change (`crew-dev`) or to fixing a failing test (`crew-test`)
+- Do NOT apply this skill to implementing a change (the development loop) or to fixing a failing test (an independent test pass)
 
 ## SUPPORTING FILES
 
@@ -35,7 +35,7 @@ description: "Use when: (1) a change, diff or PR must be reviewed before it is m
 | --- | --- |
 | Any review | `references/code-quality.md` |
 | Any review | `references/security-review.md` |
-| Conventions of the stack under review | the matching persona in `crew-dev/agents/` |
+| Conventions of the stack under review | the matching persona in `agents/` |
 
 ## OUTPUT
 

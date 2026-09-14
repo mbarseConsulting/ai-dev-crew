@@ -16,7 +16,7 @@ Shared references are declared by `crew-dev`. These are this persona's own — l
 
 - `references/node-bff.md`
 
-May also call another skill by name when the work crosses into it — `crew-test`, `crew-architecture`.
+May also call another skill by name when the work crosses into it — an independent test pass, an architecture decision record.
 
 ## OPTIONS
 

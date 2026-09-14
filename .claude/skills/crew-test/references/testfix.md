@@ -24,7 +24,7 @@ Execute the following steps in order. Do not skip steps. Do not touch any file b
 - Never widen or weaken an assertion to make a failing test pass
 - Never modify a test to hide a genuine bug in the source
 - Never exceed 3 verify-loop iterations without stopping to report
-- Do NOT use these rules for writing new tests for previously-untested behavior — they fix already-written, already-failing tests; use `crew-dev` (which writes tests alongside new code) or `crew-test`'s Design option (which designs missing scenarios) instead
+- Do NOT use these rules for writing new tests for previously-untested behavior — they fix already-written, already-failing tests; use the development loop (which writes tests alongside new code) or `crew-test`'s Design option (which designs missing scenarios) instead
 
 ## FOCUS
 

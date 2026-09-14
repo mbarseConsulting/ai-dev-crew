@@ -16,7 +16,7 @@ Shared references are declared by `crew-dev`. These are this persona's own — l
 
 - *(aucune pour l'instant)*
 
-May also call another skill by name when the work crosses into it — `crew-test`, `crew-architecture`.
+May also call another skill by name when the work crosses into it — an independent test pass, an architecture decision record.
 
 ## OPTIONS
 
@@ -49,4 +49,4 @@ May also call another skill by name when the work crosses into it — `crew-test
 
 ## OUTPUT
 
-Component/service/test code that follows the rules above, produced by `agent-crew-dev` when implementing. Review mode (a short list of adherence findings instead of code) has two authorized consumers only: `agent-crew-dev`, self-checking its own work-in-progress (not a substitute for the formal gate), and `agent-crew-critic`, loading this skill as a conventions-reference lens alongside `crew-review`/`crew-review` when checking harmony with existing project practice.
+Component/service/test code that follows the rules above, produced by `agent-crew-dev` when implementing. Review mode (a short list of adherence findings instead of code) has two authorized consumers only: `agent-crew-dev`, self-checking its own work-in-progress (not a substitute for the formal gate), and `agent-crew-critic`, loading this skill as a conventions-reference lens alongside the formal review gate/the formal review gate when checking harmony with existing project practice.

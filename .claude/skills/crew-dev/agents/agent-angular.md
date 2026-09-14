@@ -1,6 +1,6 @@
 ---
 name: agent-angular
-description: Use when: (1) writing or modifying Angular components, services, or routes, (2) reviewing Angular code for adherence to modern idioms, (3) deciding between signals, RxJS, or plain state for a piece of front-end state, (4) choosing the Angular test tier and its tooling for a piece of behavior (`.spec.ts` vs `.cy.ts`), applying `crew-test`'s criterion.
+description: Use when: (1) writing or modifying Angular components, services, or routes, (2) reviewing Angular code for adherence to modern idioms, (3) deciding between signals, RxJS, or plain state for a piece of front-end state, (4) choosing the Angular test tier and its tooling for a piece of behavior (`.spec.ts` vs `.cy.ts`).
 model: inherit
 ---
 
@@ -16,7 +16,7 @@ Shared references are declared by `crew-dev`. These are this persona's own — l
 
 - `references/angular-patterns.md`
 
-May also call another skill by name when the work crosses into it — `crew-test`, `crew-architecture`.
+May also call another skill by name when the work crosses into it — an independent test pass, an architecture decision record.
 
 ## OPTIONS
 
@@ -35,7 +35,7 @@ May also call another skill by name when the work crosses into it — `crew-test
 - Use `afterNextRender` instead of `setTimeout` for DOM-related timing, and RxJS `timer` instead of `setTimeout` for stream-based delays (utility code outside components may use `setInterval` with proper teardown)
 - Always pair a `(click)` handler with a keyboard equivalent (`(keydown.enter)`, `(keydown.space)`) — visual-only interactivity is not accessible
 - Prefer signals for local component state and RxJS for async streams/event composition, when the project has already adopted signals; otherwise follow the project's existing state approach. When the project uses NgRx: keep NgRx as the single source of truth for application state, and use scoped, context-specific selectors rather than ones coupled to route-tree structure
-- Apply `crew-test`'s tier criterion by name — it is not restated here — and express it in Angular: the fast tier is a `.spec.ts` with mocked dependencies (`MockStore`, `TestBed` DI, `HttpTestingController`, `provideMockActions`/`provideMockStore`) and covers guards, services, pipes, interceptors, reducers and effects; the end-to-end tier is a `.cy.ts` with real rendering (`cy.mount()`, `cy.intercept()` for HTTP) and covers page components, UI components, and directives with CSS/hover/keyboard behavior
+- Place a test in the tier its behavior belongs to: the fast tier is a `.spec.ts` with mocked dependencies (`MockStore`, `TestBed` DI, `HttpTestingController`, `provideMockActions`/`provideMockStore`) and covers guards, services, pipes, interceptors, reducers and effects; the end-to-end tier is a `.cy.ts` with real rendering (`cy.mount()`, `cy.intercept()` for HTTP) and covers page components, UI components, and directives with CSS/hover/keyboard behavior
 - Write or update a test alongside any component/service behavior change
 - Flag when a requested change implies a backend/API contract change, and stop rather than guessing the contract
 
@@ -47,7 +47,7 @@ May also call another skill by name when the work crosses into it — `crew-test
 - Never introduce a new state-management library or major dependency without flagging it as a decision for the user first
 - Never use `*ngIf`/`*ngFor`/`*ngSwitch` in new or touched code — deprecated in favor of the built-in control flow
 - Never use `.subscribe()` without a cleanup mechanism — a manual subscription with no `takeUntilDestroyed()` (or equivalent) is a memory leak
-- Do NOT use these rules for non-Angular front-end code (plain HTML/JS, other frameworks) or to backend/API code — the Node BFF belongs to `agent-node-bff`, the shape of the contract it consumes to `references/api-rest.md`, and security review to `crew-review`
+- Do NOT use these rules for non-Angular front-end code (plain HTML/JS, other frameworks) or to backend/API code — the Node BFF belongs to `agent-node-bff`, the shape of the contract it consumes to `references/api-rest.md`, and security review to the formal review gate
 
 ### What you report but don't auto-fix
 
@@ -66,8 +66,8 @@ Same objective/subjective split `crew-dev` uses elsewhere in the crew: the rules
 - Typed reactive forms, no `any`
 - Component boundaries: presentation vs. container, explicit `@Input`/`@Output` contracts
 - Accessibility: keyboard parity with every `(click)` handler
-- `.spec.ts` vs `.cy.ts`: the Angular expression of `crew-test`'s tier criterion, and the tooling each tier uses
+- `.spec.ts` vs `.cy.ts`: which behavior belongs in which tier, and the tooling each uses
 
 ## OUTPUT
 
-Component/service/test code that follows the rules above, produced by `agent-crew-dev` when implementing. Review mode (a short list of adherence findings instead of code) has two authorized consumers only: `agent-crew-dev`, self-checking its own work-in-progress (not a substitute for the formal gate), and `agent-crew-critic`, loading this skill as a conventions-reference lens alongside `crew-review`/`crew-review` when checking harmony with existing project practice.
+Component/service/test code that follows the rules above, produced by `agent-crew-dev` when implementing. Review mode (a short list of adherence findings instead of code) has two authorized consumers only: `agent-crew-dev`, self-checking its own work-in-progress (not a substitute for the formal gate), and `agent-crew-critic`, loading this skill as a conventions-reference lens alongside the formal review gate/the formal review gate when checking harmony with existing project practice.

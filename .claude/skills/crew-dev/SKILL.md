@@ -24,15 +24,15 @@ A task spanning several technologies loads each matching persona for its part; w
 
 Execute in order. Do not write code before Step 1's output exists. Do not skip steps.
 
-0. **Read the project profile.** `crew-project` creates and maintains it, at a path outside this library; ask for that path if you were not given one. It is the only place that can declare the **domain** — nothing in a repository reveals that a project is IoT, or banking, or industrial — and the only place that names this project's own conventions. It lives outside this library, in the operator's own space; it is never stored here. No profile → work from the universal references only, say so in the report rather than assuming defaults, and name `crew-project` as the way to create one.
+0. **Read the project profile, if one was supplied.** It is the only place that can declare the **domain** — nothing in a repository reveals that a project is IoT, or banking, or industrial — and the only place that names this project's own conventions. It is never stored in this library. No profile → work from the universal references only, and say so in the report rather than assuming defaults.
 1. **Understand scope.** Parse the instructions (or the handed-off `docs/adr/`/`docs/design/` file). Extract target files, expected behavior, and an acceptance checklist — concrete, verifiable, one line per criterion. Keep it; it is re-checked in Step 8. If ambiguous, ask before proceeding.
 2. **Identify the technology from the table below and load its persona.** Detection is mechanical, not a judgement. No row matches → say so and stop; never continue on generic knowledge while pretending a persona was loaded.
 3. **Detect project commands.** Package manager from the lockfile (`package-lock.json` → npm, `yarn.lock` → yarn, `pnpm-lock.yaml` → pnpm, `bun.lockb` → bun; `pom.xml` → Maven, `build.gradle` → Gradle). Typecheck/build, test runner and linter from `package.json` scripts, then config files, then dependencies as a last resort. In a monorepo, scope every command to the relevant package. A command that cannot be determined is skipped and reported, never guessed.
 4. **Develop.** Follow existing patterns; surgical edits; respect existing imports, naming and structure; no new dependency unless the task explicitly requires one.
 5. **Compile / typecheck.** Zero errors before moving on. Errors count against the repair budget. Warnings alone don't block — note them.
-6. **Run the relevant tests.** Nearest tests first; escalate to the package's suite if the change touches shared code. No test file: note it, proceed, don't invent test infrastructure mid-task. **When a test fails, load `crew-test` and apply its testfix rules** — do not restate them here.
+6. **Run the relevant tests.** Nearest tests first; escalate to the package's suite if the change touches shared code. No test file: note it, proceed, don't invent test infrastructure mid-task. **When a test fails, decide first whether the source or the test is wrong**, then fix that one — never adjust a test to match code you have not verified.
 7. **Check the loaded persona's rules against the change.** Auto-fix violations of its mechanical rules in code touched this session; report-only for the subjective ones. Never rewrite otherwise-correct working code for style alone.
-8. **Final conformity — labeled as a self-check.** Re-read Step 1's checklist. Per criterion: done, partial, or not done, with explanation. Fix what is fixable within budget. This is your own read-through, never the formal gate — that is `crew-review`, a separate fresh pass. Say so.
+8. **Final conformity — labeled as a self-check.** Re-read Step 1's checklist. Per criterion: done, partial, or not done, with explanation. Fix what is fixable within budget. This is your own read-through, never the formal gate: that is a separate pass, run by someone who has not seen this work being written. Say so.
 9. **Report with evidence.** Attach the actual command output for every claim of success. No "should pass now."
 
 **Repair budget: 3 fix-and-recheck cycles**, shared across Steps 5–8. After 3 cycles without a clean result, stop and report.
@@ -47,7 +47,7 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 - Never claim a task is done, or that tests pass, without the executed output attached
 - Never treat Step 8 as a substitute for the formal review
 - Never modify an API contract or a database schema unilaterally — flag it and stop
-- Do NOT apply this skill to fixing an already-failing test with no feature work involved (`crew-test`), to reviewing a change (`crew-review`), or to a design decision with real trade-offs (`crew-architecture`)
+- Do NOT apply this skill to fixing an already-failing test with no feature work involved (an independent test pass), to reviewing a change (the formal review gate), or to a design decision with real trade-offs (an architecture decision record)
 
 ## SUPPORTING FILES
 
@@ -72,7 +72,7 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 | A socket handler, a message envelope, reconnection | `references/ws.md` |
 | The profile declares the IoT domain | `references/iot.md` |
 
-Domain references are declared by the project profile, never detected. Everything else above is detected from the change itself. The persona declares its own further references. Personas and references may also call another skill by name — `crew-test`, `crew-review`, `crew-architecture`.
+Domain references are declared by the project profile, never detected. Everything else above is detected from the change itself. The persona declares its own further references. Personas and references may also call another skill by name — an independent test pass, the formal review gate, an architecture decision record.
 
 ## OUTPUT
 
@@ -88,4 +88,4 @@ The report is conversational; it is not written to a file in the client project.
 
 **Applies to this response only. Auto-resets after.**
 
-**Handoff:** the acceptance checklist and the evidence report go to `crew-review` (formal gate) or `crew-test` (independent verification).
+**Handoff:** the acceptance checklist and the evidence report go to whoever runs the formal gate and the independent verification.

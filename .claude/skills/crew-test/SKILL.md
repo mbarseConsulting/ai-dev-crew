@@ -19,7 +19,7 @@ description: "Use when: (1) one or more tests are failing and need fixing, (2) d
 
 - Route behavior to the **fast, isolated tier** when it is deterministic logic whose collaborators can be mocked — it must be provable with no real browser, no real DOM, and no real network
 - Route behavior to the **end-to-end / component tier** when it only exists once the thing is really rendered and really wired: visual result, DOM interaction, CSS, keyboard handling, a journey across screens
-- Take the concrete artifact names for a technology from its persona in `crew-dev/agents/`, never from here — this skill owns the criterion, each persona owns its expression (`agent-angular` maps it to guards/pipes/interceptors/effects vs. page and UI components, and names the file suffixes and tooling)
+- Take the concrete artifact names for a technology from its persona in `agents/`, never from here — this skill owns the criterion, each persona owns its expression (`agent-angular` maps it to guards/pipes/interceptors/effects vs. page and UI components, and names the file suffixes and tooling)
 - Design end-to-end scenarios around actual user journeys (what a person does, in order), not around implementation internals
 - Independently run the **full** test suite — not just the subset the change's author ran — as the verification step, and report the actual command output
 - Flag disabled or skipped suites (e.g. `describe.skip`, `xdescribe`) rather than passing over them silently
@@ -31,7 +31,7 @@ description: "Use when: (1) one or more tests are failing and need fixing, (2) d
 - Never restate a technology's artifact list or file-naming convention here — that belongs to its persona, and two copies would drift
 - Never treat "the author's own targeted run passed" as sufficient verification — this skill's value is in running the full suite independently of the author
 - Never let a disabled test suite go unflagged
-- Do NOT apply this skill to implementing a feature and writing its accompanying tests (`crew-dev`) or to reviewing a change (`crew-review`) — this skill is strategy, repair and independent verification
+- Do NOT apply this skill to implementing a feature and writing its accompanying tests (the development loop) or to reviewing a change (the formal review gate) — this skill is strategy, repair and independent verification
 
 ## FOCUS
 
@@ -53,7 +53,7 @@ Either: a tier recommendation (which kind of test a piece of behavior belongs in
 | Context | Load |
 | --- | --- |
 | A test is failing and must be fixed | `references/testfix.md` |
-| The concrete artifacts and file naming of a stack | that stack's persona in `crew-dev/agents/` |
+| The concrete artifacts and file naming of a stack | that stack's persona in `agents/` |
 
 ## ACTIVATION - DEACTIVATION - HANDOFF
 

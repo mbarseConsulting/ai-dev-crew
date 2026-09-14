@@ -14,7 +14,7 @@ description: "Use when: (1) running a periodic tech-watch pass to keep the libra
 
 Execute in order. This is a maintenance skill for the library itself, never one to run at a client site.
 
-1. **Scope.** Take the technologies from the personas in `crew-dev/agents/` and the references in `crew-dev/references/`, plus cross-cutting conventions. A technology with no persona is out of scope, and so is general industry news — the only findings that matter are those able to change an existing rule.
+1. **Scope.** Take the technologies from the personas in `agents/` and the references in `references/`, plus cross-cutting conventions. A technology with no persona is out of scope, and so is general industry news — the only findings that matter are those able to change an existing rule.
 2. **Collect.** Read the monitoring feeds declared in `references/sources.md`, and nothing else. No open crawling: the cost of a run is bounded by that list, deliberately.
 3. **Doctrinal diff.** For each finding, the question is never "is this interesting?" — it is **"which existing rule becomes wrong or incomplete?"** Name the skill and quote the rule, or drop the finding.
 4. **Route each surviving finding** by what it actually changes:
@@ -32,7 +32,7 @@ Execute in order. This is a maintenance skill for the library itself, never one 
 - Never touch a le **profil projet**: those are maintained by reading the employer's codebase, not by veille, and they are gitignored
 - Never widen the source list mid-run to chase a finding — note the gap in the digest and revise `references/sources.md` deliberately
 - Never report a finding as impacting a rule without naming the skill and quoting the rule
-- Do NOT apply this skill to implementing a change (`crew-dev`) or to reviewing one (`crew-review`)
+- Do NOT apply this skill to implementing a change (the development loop) or to reviewing one (the formal review gate)
 
 ## FOCUS
 

@@ -41,10 +41,10 @@ local/*
 # Vestiges de l'ère plugin — à supprimer une fois la migration validée
 .attic/
 
-# Rien de projet ni d'employeur dans la bibliotheque : elle voyage a vie, un projet est jetable.
-# Garde-fou contre une reintroduction ; le profil projet vit hors de ce depot.
+# Nothing project- or employer-specific in the library: it travels for life, a project is disposable.
+# Guard against reintroduction; the project profile lives outside this repository.
 .claude/skills/**/references/house-rules.md
-# crew-project : le routeur et le template suivent leur porteur, les projets sont jetables
+# crew-project: the router and the template follow their owner, projects are disposable
 .claude/skills/crew-project/*
 !.claude/skills/crew-project/SKILL.md
 !.claude/skills/crew-project/references/

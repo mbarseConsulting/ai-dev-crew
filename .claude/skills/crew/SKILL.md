@@ -29,6 +29,7 @@ argument-hint: "[-d | -t | -r [--quality | --security] | -b | -a] [-c] <task>"
 - Resolve every path against the directory holding this `SKILL.md`. If it was not given: `.claude/skills/crew/`, then `~/.claude/skills/crew/`
 - Read in this order: the project file (if supplied), the agent, then the techno file and the references the context calls for — when the agent's steps reach them
 - The project file is the only source for the **domain** and this project's own names. None supplied → work from the shared references and say so
+- A row in the project file's `Deliberate deviations` wins over the techno or reference rule it names — apply the project's choice, and say which rule was set aside
 - **Independence guard:** `-t` or `-r` in a conversation that wrote or briefed the same change (it ran `-d` or `-b` on it) → label the output **"Self-check — not the gate"**, no verdict. A fresh conversation or `-c` avoids it
 - Say which agent, techno and references were loaded, in the first lines of the output
 

@@ -110,7 +110,7 @@ Add at the end of `docs/SPEC.md` (after the §7 paragraph ending "never the othe
 
 ## 8. Model routing per role
 
-Per [ADR 0009](./adr/0009-model-routing.md), dispatch-time model choice is doctrine, not accident. Defaults (overridable per project — see below):
+Per [ADR 0009](../adr/0009-model-routing.md), dispatch-time model choice is doctrine, not accident. Defaults (overridable per project — see below):
 
 | Role / work | Model | Rationale |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ The butler agent file carries a runtime copy of this table (the plugin ships to 
 In `docs/SPEC.md` §6 "Enforcement layers", after the bullet beginning "- **Single source of truth per rule**", insert:
 
 ```markdown
-- **Model routing**: the butler passes an explicit `model` in every dispatch per the §8 table; behavioral rule, no mechanical enforcement. See [ADR 0009](./adr/0009-model-routing.md).
+- **Model routing**: the butler passes an explicit `model` in every dispatch per the §8 table; behavioral rule, no mechanical enforcement. See [ADR 0009](../adr/0009-model-routing.md).
 ```
 
 - [ ] **Step 3: Verify consistency**

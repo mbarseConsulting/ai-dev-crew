@@ -28,7 +28,7 @@ This asymmetry is the reason a project profile must exist at all — not tooling
 
 **4. `crew-dev` gains Step 0:** read the project profile if one was supplied; absent, work from the universal references only and **say so**, rather than assuming defaults.
 
-**5. No generator, for now.** `docs/templates/project-profile.template.md` is committed; instances are not. A profile is created a couple of times a year, and a template copied by hand delivers nearly all of the value. The one real argument for tooling — a profile may cite a reference that no longer exists — is a **validation** concern, answered by extending the existing structural routing check, not by generating files. This follows the deferred-enforcement precedent of [ADR 0006](./0006-deferred-hooks-and-worktrees.md) and [ADR 0009](./0009-model-routing.md): behavioural rule first, tooling only once it leaks.
+**5. No generator, for now.** `crew-project/templates/project-profile.md` is committed; instances are not. A profile is created a couple of times a year, and a template copied by hand delivers nearly all of the value. The one real argument for tooling — a profile may cite a reference that no longer exists — is a **validation** concern, answered by extending the existing structural routing check, not by generating files. This follows the deferred-enforcement precedent of [ADR 0006](./0006-deferred-hooks-and-worktrees.md) and [ADR 0009](./0009-model-routing.md): behavioural rule first, tooling only once it leaks.
 
 ## Alternatives considered
 
@@ -38,7 +38,7 @@ This asymmetry is the reason a project profile must exist at all — not tooling
 
 ## Consequences
 
-- `crew-dev/references/house-rules.md` is removed. `docs/templates/house-rules.template.md` is replaced by `docs/templates/project-profile.template.md`, which additionally declares the domain and the stack.
+- `crew-dev/references/house-rules.md` is removed. `docs/templates/house-rules.template.md` is replaced by `crew-project/templates/project-profile.md`, which additionally declares the domain and the stack.
 - `.gitignore` keeps a guard against reintroduction, now stated as a portability rule rather than a leak rule.
 - `crew-dev` carries an explicit NEVER: nothing project- or employer-specific is stored in this library.
 - `references/iot.md` is the first domain reference. It is maintained by `crew-watch` like any other, and its sources join `crew-watch/references/sources.md`.

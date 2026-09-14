@@ -4,6 +4,7 @@ skill,crew-review,-,peuple,2
 skill,crew-test,-,peuple,1
 skill,crew-architecture,-,migre,0
 skill,crew-watch,-,peuple,1
+skill,crew-project,-,peuple,1
 persona,agent-java,crew-dev,peuple,4
 persona,agent-angular,crew-dev,peuple,1
 persona,agent-node-bff,crew-dev,peuple,1

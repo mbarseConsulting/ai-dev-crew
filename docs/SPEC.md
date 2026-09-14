@@ -75,7 +75,7 @@ A merged reference carries two sections: **`## Règles` is normative, `## Pourqu
 
 `crew-watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site.
 
-**Nothing project- or employer-specific is stored in this library.** It travels with its owner for life; a project is disposable. The project profile — domain, stack, and this project's own names — lives in the operator's own space, outside this repository and outside the client's, and is pointed at, never contained. Only `docs/templates/project-profile.template.md` is committed.
+**Nothing project- or employer-specific is stored in this library.** It travels with its owner for life; a project is disposable. The project profile — domain, stack, and this project's own names — lives in the operator's own space, outside this repository and outside the client's, and is pointed at, never contained. Only `crew-project/templates/project-profile.md` is committed.
 
 Skills are portable Markdown, self-contained, and referenced **by name only** — never by directory path — so they stay usable outside Claude Code and never cross-reference another skill's internals. `dev-loop`'s handoff to `testfix` for classify-and-fix rules is the canonical example of this pattern: `dev-loop` references `testfix` by name and does not restate its rules, which is exactly why those rules have exactly one home instead of two copies that can drift apart.
 

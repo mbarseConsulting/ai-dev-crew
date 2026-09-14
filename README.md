@@ -62,7 +62,7 @@ Les références se chargent **par contexte**, jamais par défaut : tu touches u
 
 Une référence fusionnée porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique, et en cas de désaccord c'est `## Règles` qui a raison.**
 
-**Rien de projet ni d'employeur ne vit dans cette bibliothèque.** Elle se balade à vie ; un projet est jetable. Le **profil projet** — domaine, stack, noms maison — vit dans ton espace à toi, hors de ce dépôt et hors du dépôt client, et il est *pointé*, jamais *contenu*. Seul `docs/templates/project-profile.template.md` est committé.
+**Rien de projet ni d'employeur ne vit dans cette bibliothèque.** Elle se balade à vie ; un projet est jetable. Le **profil projet** — domaine, stack, noms maison — vit dans ton espace à toi, hors de ce dépôt et hors du dépôt client, et il est *pointé*, jamais *contenu*. Seul `crew-project/templates/project-profile.md` est committé.
 
 C'est aussi lui qui rend le domaine connaissable : **la techno se détecte, le domaine se déclare.** `*.java` est un fait observable ; rien dans une arborescence ne dit qu'un projet fait de l'IoT.
 

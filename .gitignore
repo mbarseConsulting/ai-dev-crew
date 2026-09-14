@@ -1,4 +1,4 @@
-# Fichiers système
+# System files
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -26,7 +26,7 @@ tmp/
 *.log
 logs/
 
-# Notes personnelles (optionnel - décommenter si souhaité)
+# Personal notes (optional - uncomment if wanted)
 # notes/personal/
 
 # Ignore contenu de local/ mais garde la structure
@@ -38,7 +38,7 @@ local/*
 # Configuration locale Claude Code
 .claude/settings.local.json
 
-# Vestiges de l'ère plugin — à supprimer une fois la migration validée
+# Remnants of the plugin era — delete once the migration is validated
 .attic/
 
 # Nothing project- or employer-specific in the library: it travels for life, a project is disposable.

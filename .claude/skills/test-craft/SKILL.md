@@ -11,16 +11,18 @@ description: "Use when: (1) deciding whether a piece of behavior belongs in a fa
 
 ### What you MUST do
 
-- Route logic/state/pure-function behavior to fast, isolated tests: guards (route logic, dispatch), services (business logic, API calls, mocked dependencies), pipes (pure transformations), interceptors (HTTP headers, auth), reducers (state mutations), effects (side effects, dispatching) — no real DOM, no real browser
-- Route visual, DOM-interaction, and user-journey behavior to end-to-end/component tests: page components (forms, routing, complex state), UI components (modals, cards, selects), directives with CSS/hover/keyboard behavior — real rendering
+- Route behavior to the **fast, isolated tier** when it is deterministic logic whose collaborators can be mocked — it must be provable with no real browser, no real DOM, and no real network
+- Route behavior to the **end-to-end / component tier** when it only exists once the thing is really rendered and really wired: visual result, DOM interaction, CSS, keyboard handling, a journey across screens
+- Take the concrete artifact names for a technology from its craft skill, never from here — this skill owns the criterion, each craft skill owns its expression (`angular-craft` maps it to guards/pipes/interceptors/effects vs. page and UI components, and names the file suffixes and tooling)
 - Design end-to-end scenarios around actual user journeys (what a person does, in order), not around implementation internals
 - Independently run the **full** test suite — not just the subset the change's author ran — as the verification step, and report the actual command output
 - Flag disabled or skipped suites (e.g. `describe.skip`, `xdescribe`) rather than passing over them silently
 
 ### What you NEVER do
 
-- Never put pure logic (reducers, pipes, services) in a heavy DOM/browser-driven test — too slow, wrong tier
+- Never put deterministic logic in a heavy DOM/browser-driven test — too slow, wrong tier
 - Never rely on a fast/mocked test to validate real rendering, CSS, or DOM interaction — wrong tier, use the end-to-end tier instead
+- Never restate a technology's artifact list or file-naming convention here — that belongs to its craft skill, and two copies would drift
 - Never treat "the author's own targeted run passed" as sufficient verification — this skill's value is in running the full suite independently of the author
 - Never let a disabled test suite go unflagged
 - Do NOT apply this skill to fixing an already-failing test (use `testfix`) or to implementing the feature itself and writing its accompanying tests (use `dev-loop`) — this skill is strategy and independent verification, not authoring or repair

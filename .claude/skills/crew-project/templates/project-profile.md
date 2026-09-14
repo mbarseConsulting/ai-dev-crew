@@ -1,13 +1,7 @@
 # Profil projet — <nom du projet>
 
-> **Ce fichier ne vit PAS dans le crew.** Le crew ne contient que ce qui suit son porteur à
-> vie ; un projet est jetable. Range ce profil dans ton espace à toi, hors du dépôt du crew
-> et hors du dépôt client — un fichier par projet, supprimable sans rien casser.
->
-> Il répond à deux questions qu'aucune détection automatique ne peut trancher :
-> **quel est le domaine** (indétectable depuis l'arborescence) et **comment ça s'appelle ici**.
->
-> En mode collage, c'est le premier fichier à coller, avant `crew-dev/SKILL.md`.
+> Emplacement par défaut : `~/.crew/projects/<projet>.md`. Hors dépôt crew, hors dépôt client, supprimable.
+> En mode collage, c'est le premier fichier à coller.
 
 ## Domaine
 

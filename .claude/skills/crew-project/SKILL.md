@@ -13,7 +13,7 @@ description: "Use when: (1) starting work on a project this library has no profi
 
 ### What you MUST do
 
-- Write the profile **outside this library and outside the client repository**, at a path the operator gives you — this library travels with its owner for life, a project is disposable, and the two must never share a tree
+- Write the profile **outside this library and outside the client repository**, default `~/.crew/projects/<project>.md`, or a path the operator gives instead
 - Start from `templates/project-profile.md` and fill it by asking one question at a time
 - Ask the **domain** first: it is the only thing no detection can infer, and it is why this profile exists
 - Fill the house-conventions tables from the project's actual code — read it — rather than from what the operator remembers

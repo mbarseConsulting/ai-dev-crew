@@ -44,5 +44,8 @@ local/*
 # Rien de projet ni d'employeur dans la bibliotheque : elle voyage a vie, un projet est jetable.
 # Garde-fou contre une reintroduction ; le profil projet vit hors de ce depot.
 .claude/skills/**/references/house-rules.md
-.claude/skills/**/references/*profile*.md
-.claude/skills/**/*project*.md
+# crew-project : le routeur et le template suivent leur porteur, les projets sont jetables
+.claude/skills/crew-project/*
+!.claude/skills/crew-project/SKILL.md
+!.claude/skills/crew-project/templates/
+!.claude/skills/crew-project/templates/*

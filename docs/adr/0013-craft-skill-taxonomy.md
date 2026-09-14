@@ -51,7 +51,7 @@ Structure and Contracts are **transverse to language** by construction; that is 
 ## Consequences
 
 - Six skills are added: `layering-craft`, `persistence-craft`, `api-rest-craft`, `kafka-craft`, `ws-craft`, and `node-bff-craft` — the last closing a documented gap, the Node BFF having been excluded by both `angular-craft` and `java-craft` while `dev-loop` forbids working in a technology with no matching craft skill.
-- `persistence-craft` is populated as the reference for the format; the other five ship as skeletons explicitly marked `À PEUPLER`, and `java-craft` is recorded as under-specified. Marked, not silently thin.
+- `persistence-craft` is populated as the reference for the format, and `java-craft` — previously four generic MUST lines — is brought to the same depth. The other five ship as skeletons explicitly marked `À PEUPLER`. Marked, not silently thin.
 - `house-rules.md` being gitignored is a security requirement, not tidiness: those files name an employer's internal classes and package layout.
 - The `angular-craft` / `test-craft` duplication is repaired: `test-craft` owns the tier criterion, stated generically, and `angular-craft` keeps only its Angular expression (file suffixes, tooling, artifact list). Repairing it surfaced a leak in the opposite direction — `test-craft`, nominally technology-agnostic, enumerated Angular/NgRx artifacts (guards, pipes, interceptors, reducers, effects) that no Java or Kafka work could use. A third copy of the disabled-suite rule was found in `angular-craft` and removed.
 - `python-craft` is parked — retained, not maintained, since the current stack does not use it.

@@ -65,7 +65,7 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | `code-quality` | Procedure | Correctness, reuse, test coverage, convention compliance, `docs/adr/` conformance |
 | `security-review` | Procedure | OWASP Top 10, secrets handling, dependency audit, authz patterns |
 | `angular-craft` | Language / framework | Angular/TypeScript/RxJS front-end conventions, accessibility |
-| `java-craft` | Language / framework | Java/Spring Boot conventions — **under-specified, to deepen** |
+| `java-craft` | Language / framework | Java 21 / Spring Boot 3.x: constructor injection and proxy semantics, records/sealed/`Optional`, configuration, centralised exception handling, SLF4J, Spring test slices |
 | `node-bff-craft` | Language / framework | Node BFF: aggregation, resilience, secrets — **skeleton** |
 | `python-craft` | Language / framework | Python/FastAPI conventions — **parked**, not in the current stack |
 | `layering-craft` | Structure | Entity/DTO/mapper boundaries, package layout, what may cross which layer — **skeleton** |

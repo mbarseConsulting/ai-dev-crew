@@ -1,36 +1,26 @@
-# conventions — commits, versions, changelog, TDD baseline
+# conventions — commits, versions, changelog, test baseline
 
-> Chargé quand le contexte le demande : un commit, une version, un changelog, « est-ce fini ? ».
-> **Règles** fait autorité, **Pourquoi** explique. En cas de désaccord, Règles a raison.
->
-> Dernière passe de veille : —
+> Load when: a commit, a version bump, a changelog, "is it done?". Last watch: 2026-09-14
 
-## Règles
+## MUST
 
-### What you MUST do
+- Prefix commit subjects per Conventional Commits (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`), `!` or a `BREAKING CHANGE:` footer for a breaking change — the prefix is data: it derives the next version and the changelog mechanically
+- Follow the project's documented branch naming; none documented → `<type>/<kebab-case-description>`
+- Apply Semantic Versioning to any versioned artifact: breaking → major, compatible capability → minor, fix → patch — a breaking change shipped as minor is what actually breaks consumers
+- Treat a 0.y.z artifact as exempt from breaking → major — under major version zero anything may change and the API is not yet stable
+- Add a Keep a Changelog entry (`Added` / `Changed` / `Deprecated` / `Removed` / `Fixed` / `Security`) for any user-visible change — `git log` says what changed in the code, the changelog says what changed for the person using it
+- Keep an `Unreleased` section at the top of the changelog — cutting a release is then retitling it
+- Treat new behavior as done only once a test exercises it — a behavior without a test is asserted, not demonstrated
 
-- Use Conventional Commits prefixes (`feat`, `fix`, `docs`, `refactor`, `test`, `chore`) for commit subjects; mark a breaking change with `!` or a `BREAKING CHANGE:` footer
-- Follow the host project's own branch-naming convention when one is documented (e.g. a `CONTRIBUTING.md`); if none exists, default to `<type>/<kebab-case-description>`
-- Apply Semantic Versioning (`MAJOR.MINOR.PATCH`) to any versioned artifact: breaking change → major, new backward-compatible capability → minor, fix or internal change → patch
-- Add a changelog entry in Keep a Changelog format (`Added` / `Changed` / `Deprecated` / `Removed` / `Fixed` / `Security`) for any user-visible change to a versioned artifact
-- Treat new behavior as requiring a test before it is considered done (TDD baseline): default to writing the failing test first; if you implement first, add the test in the same change
+## NEVER
 
-### What you NEVER do
+- Never invent a branch or commit convention when the project documents one
+- Never bump a version without its changelog entry
+- Never mark a feature or fix complete with no test on the new behavior, unless the user says tests are out of scope
 
-- Never invent a branch-naming or commit convention when the project already documents one
-- Never bump a version without a corresponding changelog entry
-- Never mark a feature or fix as complete without at least one test exercising the new behavior, unless the user explicitly says tests are out of scope for this change
-- Do NOT use these rules for prose, documentation-only repos with no versioning, or throwaway prototyping explicitly flagged as such by the user
+## Not here
 
-## Pourquoi
-
-**Un préfixe de commit est une donnée, pas un style.** Il permet de dériver mécaniquement le prochain numéro de version et le changelog. Un historique sans préfixe ne peut être résumé qu'en le relisant.
-
-**SemVer est une promesse faite à celui qui dépend de l'artefact.** Un correctif publié en version majeure ne casse rien, mais apprend aux consommateurs à ignorer les versions majeures. C'est l'inverse qui casse : un changement cassant publié en mineure.
-
-**Le changelog s'écrit pour un humain.** `git log` dit ce qui a changé dans le code, le changelog dit ce qui a changé pour celui qui l'utilise. Les deux ne se remplacent pas.
-
-**La base TDD ne porte pas sur l'ordre d'écriture, elle porte sur la preuve.** Un comportement sans test n'est pas démontré, il est affirmé. Écrire le test d'abord est la façon la plus sûre de voir qu'il peut échouer.
+- Prose, documentation-only repositories, prototypes the user flagged as throwaway — none of this applies
 
 ## Sources
 

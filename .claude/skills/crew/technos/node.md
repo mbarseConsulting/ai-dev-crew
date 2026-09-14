@@ -1,15 +1,13 @@
 # node — Node.js HTTP service
 
-Loaded by the role agent once `SKILL.md`'s detection table has identified this stack.
+> Load when: the change touches `*.ts` or `*.js` under a `package.json` with no `angular.json` above it, whose dependencies include `express`, `fastify`, `koa`, `hono` or `@nestjs/core`. Last watch: — · Target: Node 20 LTS
 
-> Dernière passe de veille : —  ·  Statut : **à peupler**
+## MUST
 
-## REFERENCES
+- No framework-specific rule yet — the rules this stack needs today are the BFF pattern and the shared practices, both loaded by context
 
-None yet.
+## Not here
 
-## BEHAVIOR
-
-No Node-specific rule yet. The rules that used to live here were the BFF pattern, true in any language: they are `references/bp-bff.md`, loaded by context. The practices every stack shares load from `SKILL.md`'s shared table.
-
-<!-- Customization hook — a project's own names, versions and choices belong in its project file, never here. -->
+- Aggregation, timeouts, tokens, correlation → `references/bp-bff.md`
+- Shape of the HTTP contract → `references/bp-api-rest.md`
+- Practices every stack shares → `references/bp-code.md`

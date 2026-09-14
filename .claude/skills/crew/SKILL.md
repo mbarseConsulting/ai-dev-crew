@@ -8,7 +8,7 @@ argument-hint: "[-d | -t | -r [--quality | --security] | -b | -a] [-c] <task>"
 
 1. **Pick the role** from the flag (table below). No flag → `agent-dev`.
 2. **Detect the techno** with the detection table below.
-3. Read `agents/{role}.md` — you ARE this agent. The agent says when to read `technos/{techno}.md`, which lists its own `technos/{techno}-*.md` references: never read it before the agent asks.
+3. Read `agents/{role}.md` — you ARE this agent. The agent says when to read `technos/{techno}.md`: never read it before the agent asks.
 
 **Option — `-c` / `--context`:** use the `Agent` tool with `subagent_type: "{role}"` instead of reading it inline, with a self-contained brief naming the techno. Never for `-b` or `-a`: the butler talks to the user, so it always runs inline — ignore `-c` and say so.
 
@@ -47,7 +47,7 @@ Match the changed file and the **nearest** build file above it, never the reposi
 
 | Nearest to the changed file | Techno |
 | --- | --- |
-| `*.java`, or a `pom.xml` / `build.gradle(.kts)` itself | `technos/java.md` |
+| `*.java`, or a `pom.xml` / `build.gradle(.kts)` itself | `technos/spring.md` |
 | `*.ts` / `*.html` / `*.scss` / `*.css` under an `angular.json` project | `technos/angular.md` |
 | `*.ts` / `*.js` under a `package.json` with no `angular.json` above it, whose dependencies include `express`, `fastify`, `koa`, `hono` or `@nestjs/core` | `technos/node.md` |
 | `*.py` under a `pyproject.toml` whose dependencies include `fastapi` | `technos/python.md` |
@@ -65,7 +65,7 @@ A file matching no row — `*.kt`, a Node library, a Django app — has no techn
 | An endpoint that aggregates or reshapes backend calls for one front end | `references/bp-bff.md` |
 | A producer, a consumer, a topic, an event payload | `references/bp-kafka.md` |
 | A socket handler, a message envelope, reconnection | `references/bp-ws.md` |
-| The project file's `Références de domaine` line lists `iot` | `references/dom-iot.md` |
+| The project file's `Domain references` line lists `iot` | `references/dom-iot.md` |
 
 Agent-owned procedures, loaded by their agent: `references/proc-testfix.md`, `references/proc-quality.md`, `references/proc-security.md`, `references/proc-architecture.md`.
 

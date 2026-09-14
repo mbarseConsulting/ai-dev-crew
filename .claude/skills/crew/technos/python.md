@@ -1,28 +1,17 @@
 # python — Python / FastAPI
 
-Loaded by the role agent once `SKILL.md`'s detection table has identified this stack.
+> Load when: the change touches `*.py` under a `pyproject.toml` whose dependencies include `fastapi`. Last watch: — · Target: Python 3.12 / FastAPI 0.11x · Status: parked
 
-> Dernière passe de veille : —  ·  Statut : **parqué**
+## MUST
 
-## REFERENCES
+- Type functions and endpoints end to end, with type hints and Pydantic models — an untyped boundary is validated by nobody
+- Inject dependencies through `Depends` — it is what FastAPI can override in tests
 
-None yet.
+## NEVER
 
-## BEHAVIOR
+- Never block inside an `async` endpoint (a sync HTTP client, a sync driver) without flagging it — it stalls the event loop for every request
 
-### What you MUST do
+## Not here
 
-- Keep functions and endpoints typed end-to-end (type hints, Pydantic models) — no untyped escape hatches without a stated reason
-
-### What you NEVER do
-
-- Never mix sync and async code paths carelessly (a blocking call inside an async endpoint) without flagging the tradeoff
-- Do NOT use these rules for non-Python backend code or to front-end code
-
-<!-- Customization hook — a project's own names, versions and choices belong in its project file, never here. -->
-
-## FOCUS
-
-- Modern FastAPI idioms (Pydantic models, dependency injection via `Depends`)
-- Sync vs. async: right tool for I/O-bound vs. CPU-bound work
-- Test coverage with pytest, matching the project's existing test style
+- Shape of the HTTP contract → `references/bp-api-rest.md`
+- Practices every stack shares → `references/bp-code.md`

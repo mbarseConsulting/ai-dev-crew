@@ -1,90 +1,88 @@
 # ai-dev-crew
 
-_Bibliothèque personnelle de skills et d'agents Claude Code. Pas un marketplace._
+_A personal library of Claude Code skills and agents. Not a marketplace._
 
-## Ce que c'est
+## What it is
 
-Un jeu de **skills** — des checklists opposables, courtes et vérifiables — plus quelques
-**agents** qui ne sont que des façons commodes de les charger. Les skills portent tout le
-comportement ; les agents n'apportent que ce qu'une skill ne peut pas porter : une
-restriction d'outils et un contexte vierge.
+A set of **skills** — short, verifiable checklists — plus a few **agents** that are only
+convenient ways to load them. Skills carry all the behavior; agents add only what a skill
+cannot: a tool restriction and a fresh context.
 
-La bibliothèque **est** le produit. Les agents sont une commodité, jamais une dépendance :
-tout ce que fait le crew se fait à la main, une skill à la fois, dans une session nue.
+The library **is** the product. Agents are a convenience, never a dependency: everything the
+crew does can be done by hand, one skill at a time, in a bare session.
 
-## Deux modes d'usage
+## Two ways to use it
 
-**Chez soi, avec Claude Code.** Les skills de `.claude/skills/` et les agents de
-`.claude/agents/` sont auto-découverts quand on travaille dans ce dépôt. Pour les avoir
-partout, lier la bibliothèque dans son répertoire personnel :
+**At home, with Claude Code.** The skills in `.claude/skills/` and the agents in
+`.claude/agents/` are auto-discovered when working in this repository. To have them
+everywhere, link the library into your home directory:
 
 ```bash
 ln -s "$PWD/.claude/skills"/* ~/.claude/skills/
 ln -s "$PWD/.claude/agents"/* ~/.claude/agents/
-claude --agent agent-butler   # session pilotée par le butler
+claude --agent agent-butler   # a session driven by the butler
 ```
 
-**Sur site, sans installation et sans choix du modèle.** Aucun plugin, aucun agent : on
-ouvre les fichiers du travail en cours et on les colle dans la conversation. Le routeur
-`crew/SKILL.md` liste les fichiers à coller ensemble. Chaque fichier tient
-dans une fenêtre de collage — voir la règle de granularité dans [`docs/doctrine.md`](./docs/doctrine.md).
+**On site, with no install and no choice of model.** No plugin, no agent: open the files for
+the work at hand and paste them into the conversation. The router `crew/SKILL.md` lists what
+to paste together.
 
-## Les skills
+## The skills
 
-Trois. **Une skill ne nomme jamais une autre skill** : elle ne référence que ses propres
-fichiers, donc elle marche seule, collée ou chargée ([ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)).
-Seule exception : `crew-maintenance` nomme `crew`, qu'elle maintient ([ADR 0017](./docs/adr/0017-crew-maintenance-out-of-crew.md)).
+Three. **A skill never names another skill**: it references only its own files, so it works
+alone, pasted or loaded ([ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)).
+One exception: `crew-builder` names `crew`, which it maintains ([ADR 0017](./docs/adr/0017-crew-maintenance-out-of-crew.md)).
 
-| Commande | Quand | Part chez le client |
+| Command | When | Goes to the client |
 | --- | --- | --- |
-| `/crew` | développer, tester, relire, orchestrer, décider | oui |
-| `/crew-project` | le domaine ou les noms maison ne se voient pas dans le code | le routeur, pas les projets |
-| `/crew-maintenance` | réparer la structure (`-d`), veiller sur les règles de `crew` (`-w`) | **jamais** |
+| `/crew` | develop, test, review, orchestrate, decide | yes |
+| `/crew-project` | the domain or the house names are not visible in the code | the router, not the projects |
+| `/crew-builder` | add a file to `crew` (`-n`), repair the structure (`-d`), watch its rules (`-w`) | **never** |
 
-`/crew` détecte la techno, choisit le rôle, et c'est tout :
+`/crew` detects the techno, picks the role, and that is all:
 
 ```
-/crew  →  techno détectée  →  agents/agent-dev.md  →  technos/java.md  →  references/…
+/crew  →  techno detected  →  agents/agent-dev.md  →  technos/spring.md  →  references/…
 ```
 
-| Flag | Agent | Rôle |
+| Flag | Agent | Role |
 | --- | --- | --- |
-| *(aucun)* · `-d` | `agent-dev` | développe, écrit les tests |
-| `-t` | `agent-tester` | lance la suite complète, corrige les tests rouges |
-| `-r` | `agent-review` | relit qualité + sécurité, rend un verdict |
-| `-b` | `agent-butler` | qualifie, lance les autres rôles, tient les gates |
-| `-a` | `agent-butler` | tranche une décision à arbitrages, en dialogue |
+| *(none)* · `-d` | `agent-dev` | develops, writes the tests |
+| `-t` | `agent-tester` | runs the full suite, fixes red tests |
+| `-r` | `agent-review` | reviews quality and security, gives a verdict |
+| `-b` | `agent-butler` | asks how many devs, a tester, a reviewer; launches; holds the gates |
+| `-a` | `agent-butler` | settles a decision with trade-offs, in dialogue |
 
-`-c` lance le rôle en subagent au lieu de le lire en place — jamais le butler.
+`-c` launches the role as a subagent instead of reading it inline — never the butler.
 
-**Garde d'indépendance** : `-t` ou `-r` dans la conversation qui a écrit ou briefé le même
-changement produit un « Self-check — not the gate », jamais un verdict.
+**Independence guard**: `-t` or `-r` in the conversation that wrote or briefed the same
+change produces a "Self-check — not the gate", never a verdict.
 
-Les références se chargent **par contexte**, jamais par défaut ; la détection se fait sur le
-fichier de build **le plus proche** du fichier modifié. Où va chaque fichier et comment il se
-nomme : [`docs/doctrine.md`](./docs/doctrine.md) §1–2, seule source.
+References load **by context**, never by default; detection uses the build file **nearest**
+to the changed file. Where each file goes and how it is named: [`docs/doctrine.md`](./docs/doctrine.md).
 
-Une référence porte deux sections : **`## Règles` fait autorité, `## Pourquoi` explique.**
+A knowledge file is one `MUST` list and one `NEVER` list, each rule carrying its why at the
+end of the line. A procedure is a list of steps. The templates: [`docs/doctrine.md`](./docs/doctrine.md).
 
-**Rien de projet ni d'employeur n'est committé.** Les fichiers projet vivent dans
-`crew-project/`, gitignorés, et se suppriment au départ du poste. **La techno se détecte,
-le domaine se déclare.**
+**Nothing project- or employer-specific is committed.** Project files live in
+`crew-project/`, gitignored, deleted when the job ends. **The techno is detected, the domain
+is declared.**
 
-## Les agents
+## The agents
 
-`.claude/agents/` contient 4 shells lançables. Chacun précharge `crew` et `crew-project`, pointe
-vers son fichier dans `crew/agents/`, et n'apporte qu'un contexte vierge et des outils restreints :
+`.claude/agents/` holds 4 launchable shells. Each preloads `crew` and `crew-project`, points to
+its file in `crew/agents/`, and adds only a fresh context and restricted tools:
 
-| Shell | Outils retirés |
+| Shell | Tools removed |
 | --- | --- |
-| `agent-dev` | `Agent` : il développe, il ne lance personne |
+| `agent-dev` | `Agent`: it develops, it launches nobody |
 | `agent-tester` | `Agent` |
-| `agent-review` | `Edit`, `Agent` : il ne peut pas réécrire ce qu'il relit |
-| `agent-butler` | `Edit` — `claude --agent agent-butler`, jamais en subagent |
+| `agent-review` | `Edit`, `Agent`: it cannot rewrite what it reviews |
+| `agent-butler` | `Edit` — `claude --agent agent-butler`, never as a subagent |
 
 ```mermaid
 flowchart LR
-    U((user)) <--> B["butler : qualifie / décide"]
+    U((user)) <--> B["butler: asks / decides"]
     B --> G1{gate}
     G1 --> D["agent-dev x N"]
     D --> T["agent-tester"]
@@ -93,21 +91,21 @@ flowchart LR
     G2 --> U
 ```
 
-Le butler écrit dans `docs/adr/` et `docs/design/`, le review dans `docs/reviews/` — du
-projet client. Les rapports du dev et du tester sont conversationnels.
+The butler writes to `docs/adr/` and `docs/design/`, the review to `docs/reviews/` — in the
+client project. The dev's and the tester's reports are conversational.
 
-## Principes
+## Principles
 
-Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitrage :
-[`docs/doctrine.md`](./docs/doctrine.md). Chaque décision non évidente est un ADR sous
+Authoritative specification: [`docs/SPEC.md`](./docs/SPEC.md). Placement rules:
+[`docs/doctrine.md`](./docs/doctrine.md). Every non-obvious decision is an ADR under
 [`docs/adr/`](./docs/adr/).
 
-- **Les skills sont le crew ; les agents en sont des instanciations** — [ADR 0008](./docs/adr/0008-skills-first-doctrine.md)
-- **Agents fins, skills épaisses** — aucune connaissance techno dans un agent — [ADR 0002](./docs/adr/0002-thin-agents-fat-skills.md)
-- **Une règle, un seul domicile ; une skill ne nomme aucune autre skill** — [ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)
-- **Outils restreints par rôle** — [ADR 0004](./docs/adr/0004-role-tool-allowlists.md)
-- **Preuve avant affirmation** — `agent-dev` attache la sortie réelle des commandes — [ADR 0005](./docs/adr/0005-verification-loop.md)
-- **Les specs sont consommées, pas produites** — le crew lit `docs/adr/` et `docs/design/`, d'où qu'ils viennent (BMAD, Spec Kit, ou le butler lui-même)
+- **Skills are the crew; agents instantiate them** — [ADR 0008](./docs/adr/0008-skills-first-doctrine.md)
+- **Thin agents, fat skills** — no technology knowledge in an agent — [ADR 0002](./docs/adr/0002-thin-agents-fat-skills.md)
+- **One rule, one home; a skill names no other skill** — [ADR 0016](./docs/adr/0016-one-crew-skill-role-as-mode.md)
+- **Tools restricted per role** — [ADR 0004](./docs/adr/0004-role-tool-allowlists.md)
+- **Evidence before claims** — `agent-tester` attaches the suite's real output — [ADR 0005](./docs/adr/0005-verification-loop.md)
+- **Specs are consumed, not produced** — the crew reads `docs/adr/` and `docs/design/`, wherever they come from (BMAD, Spec Kit, or the butler itself)
 
 ## Layout
 
@@ -115,20 +113,19 @@ Spécification faisant foi : [`docs/SPEC.md`](./docs/SPEC.md). Règles d'arbitra
 ai-dev-crew/
 ├── .claude/
 │   ├── skills/
-│   │   ├── crew/              SKILL.md · agents/ · technos/ · references/  (détail : docs/doctrine.md §2)
-│   │   ├── crew-project/      SKILL.md  (index.md · <projet>.md — gitignorés)
-│   │   └── crew-maintenance/  SKILL.md · references/  (jamais copiée chez le client)
-│   └── agents/             4 shells lançables
-├── .githooks/pre-commit    lance scripts/crew-doctor.sh
+│   │   ├── crew/              SKILL.md · agents/ · technos/ · references/  (detail: docs/doctrine.md)
+│   │   ├── crew-project/      SKILL.md  (index.md · <project>.md — gitignored)
+│   │   └── crew-builder/  SKILL.md · references/  (never copied to a client)
+│   └── agents/             4 launchable shells
+├── .githooks/pre-commit    runs scripts/crew-doctor.sh
 ├── docs/                   SPEC.md · doctrine.md · skill-manifest.csv · adr/ · design/ · plans/ · reviews/ · watch/
-├── scripts/crew-doctor.sh  contrôle structurel
+├── scripts/crew-doctor.sh  structural check
 └── CHANGELOG.md · CONTRIBUTING.md · README.md
 ```
 
-## Chantiers ouverts
+## Open work
 
-- `technos/angular-patterns.md` est vide : `technos/angular.md` n'a pas encore de `## Pourquoi`
-- `technos/node.md` est vide : ses anciennes règles étaient le pattern BFF, devenu `references/bp-bff.md`
-- `technos/python.md` est parqué — conservé, pas maintenu
-- Le test de routage live ([ADR 0014](./docs/adr/0014-activity-first-skill-agent-pattern.md)) et les évaluations par mode restent à faire
-- [ADR 0009](./docs/adr/0009-model-routing.md) ne vaut qu'en local, là où le modèle se choisit
+- `technos/node.md` is empty: its former rules were the BFF pattern, now `references/bp-bff.md`
+- `technos/python.md` is parked — kept, not maintained
+- The live routing test ([ADR 0014](./docs/adr/0014-activity-first-skill-agent-pattern.md)) and per-role evaluations remain to be done
+- [ADR 0009](./docs/adr/0009-model-routing.md) applies only locally, where the model can be chosen

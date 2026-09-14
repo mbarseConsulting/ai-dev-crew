@@ -1,32 +1,22 @@
-# Mode `--architecture` — settle a decision with trade-offs
+# architecture — settle a decision with trade-offs
 
-Loaded by `agents/agent-butler.md` under `-a`. Always inline, in the conversation with the user: a decision is a dialogue, and a launched agent cannot ask the user anything.
+> Run by: `agents/agent-butler.md` under `-a`, always inline — a decision is a dialogue with the user, and a launched agent cannot ask anything.
 
-## BEHAVIOR
+## Steps
 
-### What you MUST do
+1. **State the constraints** before any design: team size, timeline, existing stack, non-negotiables.
+2. **Load what the decision involves** — Kafka versus WebSocket loads `references/bp-kafka.md` and `references/bp-ws.md`, a layering question loads `references/bp-layering.md` — so options are weighed against the library's rules, not general knowledge.
+3. **Name at least one alternative** considered and rejected, with the reason.
+4. **Classify:** reversible → decide and move on; irreversible → explicit sign-off before proceeding.
+5. **Record it** as an ADR in the host project's `docs/adr/<slug>.md` — context, decision, alternatives, consequences — whenever it is expensive to reverse or affects boundaries or layout. A fuller design note, when needed, goes to `docs/design/<slug>.md`.
 
-- State the constraints (team size, timeline, existing stack, non-negotiables) before proposing a design
-- Load the techno files and references for what the decision involves — a Kafka-versus-WebSocket choice loads `references/bp-kafka.md` and `references/bp-ws.md`, a layering question loads `references/bp-layering.md` — so that options are weighed against the library's own rules, not general knowledge
-- Name at least one alternative that was considered and rejected, with the reason
-- Distinguish reversible decisions (make the call and move on) from irreversible ones (flag for explicit sign-off before proceeding)
-- Record a decision as a short ADR — context, decision, alternatives, consequences — whenever it is expensive to reverse or affects system boundaries or repo layout: the same predicate as this mode's trigger, not a separately judged "is this significant"
-- Write the ADR to the host project's `docs/adr/<slug>.md` (create the directory if needed), one file per decision, kebab-case slug; write a fuller design note, when one is needed, to `docs/design/<slug>.md`
+## NEVER
 
-### What you NEVER do
+- Never present one option as the only one when real alternatives existed
+- Never block on a hypothetical requirement nobody stated
+- Never silently supersede a previous decision — record the change and why
+- Never use this for a choice with no real trade-off (a variable name, a loop construct)
 
-- Never present a single option as if it were the only one when real alternatives existed
-- Never let a decision block on a hypothetical requirement that hasn't actually been stated
-- Never silently supersede a previous architectural decision — record the change and why
-- Do NOT use this mode for routine implementation choices with no real trade-off (naming a local variable, choosing a loop construct)
+## Output
 
-### Focus
-
-- System boundaries and module ownership
-- Technology and dependency choices with lasting cost
-- Repo and service layout, and how it will evolve
-- Explicit trade-offs over implicit assumptions
-
-## OUTPUT
-
-A short ADR or design note in Markdown at the paths above: context, decision, alternatives considered, consequences. Concise — a decision record, not a full design document, unless the user asks for one.
+A short ADR or design note at the paths above. A decision record, not a design document, unless the user asks for one.

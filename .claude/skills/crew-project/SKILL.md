@@ -29,7 +29,7 @@ The row above loads `acme-fleet.md`, next to `index.md`.
 - **Create:** ask the **domain first** — it is the one thing no file inspection can infer, and the reason this skill exists. Then the stack, then the conventions, from `references/project-template.md`
 - Fill the convention rows by **reading the project's code**, not from memory
 - Leave a row empty rather than guessing: empty reads as unknown, wrong reads as decided
-- Fill `Références de domaine` with reference file names without extension (`iot`), or leave it empty
+- Fill `Domain references` with reference file names without extension (`iot`), or leave it empty
 - **Create** ends by writing `<project>.md` (kebab-case name) and adding its row to `index.md` — creating `index.md` with the header above if it does not exist. A Route from that directory must then succeed
 - **Update:** edit the project file in place
 

@@ -1,34 +1,22 @@
-# code-quality — quality lens of `--review`
+# quality — the quality lens of a review
 
-> Chargé par `agents/agent-review.md`. **Règles** fait autorité.
->
-> Dernière passe de veille : —
+> Run by: `agents/agent-review.md`. Last watch: —
 
-## Règles
+## Steps
 
-### What you MUST do
+1. **Read the whole change**, and the `docs/adr/` or `docs/design/` file it came from when one exists.
+2. **Check correctness:** logic errors, edge cases, error handling, race conditions.
+3. **Check reuse and simplicity:** duplicated logic, dead code, complexity the change did not need.
+4. **Check tests:** every changed behavior has one, per `references/bp-conventions.md`; a green suite alone proves nothing about coverage.
+5. **Check conformance:** the techno file's rules and every loaded reference, as a conventions lens; commit, version and changelog per `references/bp-conventions.md`; the host project's `docs/adr/`, flagging any drift from a recorded decision.
+6. **Write each finding** with file, line, severity (blocking / non-blocking) and a proposed fix. A correctness bug is blocking, a taste preference is not.
 
-- Report findings with file path, line number, and severity (blocking / non-blocking)
-- Distinguish correctness bugs (blocking) from style or taste preferences (non-blocking)
-- Check test coverage for changed behavior against the TDD baseline in `references/bp-conventions.md`
-- Check convention compliance (commit messages, branch naming, versioning, changelog entries) against `references/bp-conventions.md`, where applicable
-- Check the change against the host project's `docs/adr/` for conformance, and flag any drift from a recorded decision
-- Check the change against the loaded techno file's rules, as a conventions lens
-- Propose a fix in the finding, but leave applying it to the user or an explicit follow-up instruction
+## NEVER
 
-### What you NEVER do
-
-- Never approve a change that hasn't been read in full
-- Never treat a passing test suite alone as sufficient evidence of correctness
-- Never silently downgrade or omit a finding to keep the report shorter
-- Do NOT use this lens for security questions (auth, secrets, injection — `references/proc-security.md`) or for system design trade-offs (an architecture decision record)
-
-### Focus
-
-- Correctness: logic errors, edge cases, error handling, race conditions
-- Reuse and simplification: duplicated logic, dead code, unnecessary complexity
-- Test coverage: missing tests for changed behavior
-- Convention compliance, where applicable
+- Never approve a change you have not read in full
+- Never silently downgrade or omit a finding to keep the report short
+- Never apply a fix — findings are proposed, the user or a follow-up applies them
+- Never cover security here (auth, secrets, injection) — that is `references/proc-security.md`
 
 ## Output
 

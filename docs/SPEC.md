@@ -2,7 +2,7 @@
 
 **Status:** authoritative. This document is the source of truth for what the ai-dev-crew crew IS: its roles, its flow, its contracts. It is not a how-to — see [`README.md`](../README.md) for install and usage. Any future evolution of the crew starts by updating this file (and, if it represents a new decision, adding an entry under [`docs/adr/`](./adr/)) *before* library files change. Decisions recorded here are not re-litigated verbally.
 
-Shipped structure: **3 skills (`crew`, `crew-project`, `crew-maintenance`); inside `crew`, 4 role agents, 4 technos, 3 techno references and 12 shared references; 4 launchable shells in `.claude/agents/`; no plugins.** File layout: [`docs/doctrine.md`](./doctrine.md) §2. See [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
+Shipped structure: **3 skills (`crew`, `crew-project`, `crew-builder`); inside `crew`, 4 role agents, 4 technos and 12 shared references; 4 launchable shells in `.claude/agents/`; no plugins.** File layout: [`docs/doctrine.md`](./doctrine.md). See [ADR 0012](./adr/0012-claude-library-over-marketplace.md) and §9 for the two consumption modes.
 
 ## Doctrine: the crew is one skill + the file contract
 
@@ -37,7 +37,7 @@ One verb per role. All technology, domain and procedural knowledge lives in the 
 ## 2. Canonical flow
 
 ```
-/crew  →  detect techno  →  agents/agent-dev.md  →  technos/java.md  →  references
+/crew  →  detect techno  →  agents/agent-dev.md  →  technos/spring.md  →  references
 ```
 
 With the butler:
@@ -58,15 +58,15 @@ The router reads the agent inline by default; `-c` launches it as a subagent —
 | --- | --- | --- |
 | `crew` | developing, testing, reviewing, orchestrating, deciding | router; `agents/`; `technos/`; `references/` |
 | `crew-project` | the project's domain, stack or house names are not obvious from its files | the path → project router |
-| `crew-maintenance` | maintaining `crew` in this repository — structural repair (`-d`), tech watch (`-w`) | the watch procedure and its feeds; never copied to a client |
+| `crew-builder` | building `crew` in this repository — new file from template (`-n`), structural repair (`-d`), tech watch (`-w`) | the watch procedure and its feeds; never copied to a client |
 
-**A skill names no other skill** — one exception: `crew-maintenance` names `crew` ([ADR 0017](./adr/0017-crew-maintenance-out-of-crew.md)). The `.claude/agents/` shells compose `crew` with `crew-project`.
+**A skill names no other skill** — one exception: `crew-builder` names `crew` ([ADR 0017](./adr/0017-crew-maintenance-out-of-crew.md)). The `.claude/agents/` shells compose `crew` with `crew-project`.
 
-Composition: router → agent → techno → references. Detection matches the changed file and the nearest build file above it; a file matching no row has no techno, and work stops. References load **by context**, never by default: a techno lists its own `technos/<techno>-*.md`, `SKILL.md`'s shared table holds the `bp-` and `dom-` references, each agent loads its `proc-` procedures. Where each file goes: [`docs/doctrine.md`](./doctrine.md) §1–2.
+Composition: router → agent → techno → references. Detection matches the changed file and the nearest build file above it; a file matching no row has no techno, and work stops. References load **by context**, never by default: a techno lists its own `technos/<techno>-*.md` when it has any, `SKILL.md`'s shared table holds the `bp-` and `dom-` references, each agent loads its `proc-` procedures. Where each file goes: [`docs/doctrine.md`](./doctrine.md).
 
 **Technology is detected; the domain is declared** ([ADR 0015](./adr/0015-library-project-boundary-and-domain-axis.md)): the domain comes from a project file.
 
-A reference carries **`## Règles`** (normative) and **`## Pourquoi`** (explanation); where they disagree, `## Règles` is right. For `technos/java-spring.md`, the rules are `technos/java.md`'s MUST/NEVER.
+A knowledge file (techno, `bp-`, `dom-`) is one `MUST` list and one `NEVER` list, each rule carrying its why in a trailing clause. A procedure file (`proc-`) is numbered steps. Both templates: [`docs/doctrine.md`](./doctrine.md).
 
 **Nothing project- or employer-specific is committed.** Project files live in `crew-project/`, gitignored, deleted when the job ends.
 

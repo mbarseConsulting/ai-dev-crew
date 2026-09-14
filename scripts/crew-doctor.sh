@@ -5,14 +5,14 @@
 # silently in paste mode. The layout rules it enforces live in docs/doctrine.md.
 #   1. every skill's frontmatter name matches its directory
 #   2. every path a skill cites (agents/, references/, technos/, and
-#      ../<skill>/… for crew-maintenance) exists relative to that skill
+#      ../<skill>/… for crew-builder) exists relative to that skill
 #   3. every techno (technos/<name>.md, no hyphen) has a detection row, every
 #      techno reference (technos/<name>-<topic>.md) has its techno, every role
 #      agent a flag
 #   4. every crew reference is loaded: references/ files carry a known prefix
 #      (bp-, dom-, proc-) and are named in SKILL.md; technos/<name>-*.md are
 #      listed as "- `technos/<name>-<topic>.md`" in technos/<name>.md
-#   5. no skill names another skill (ADR 0016) — except crew-maintenance,
+#   5. no skill names another skill (ADR 0016) — except crew-builder,
 #      which may name crew (ADR 0017)
 #   6. every launchable shell in .claude/agents/ preloads existing skills,
 #      cites no .claude/skills/ path, and has its agent in crew/agents/
@@ -116,7 +116,7 @@ for d in "$SKILLS"/*/; do
   s="$(basename "$d")"
   for other in $(skill_names); do
     [ "$other" = "$s" ] && continue
-    [ "$s" = "crew-maintenance" ] && [ "$other" = "crew" ] && continue
+    [ "$s" = "crew-builder" ] && [ "$other" = "crew" ] && continue
     # a skill name as a whole token: not glued to a letter, digit or hyphen
     grep -rnE "(^|[^A-Za-z0-9-])$other([^A-Za-z0-9-]|$)" "$d" 2>/dev/null | head -3 |
       while read -r hit; do echo "$s names $other — ${hit#$d}"; done || true
@@ -142,7 +142,7 @@ if grep -rnE "$STALE" "$SKILLS" "$AGENTS" >/dev/null 2>&1; then
   while read -r hit; do fail "stale — ${hit#$ROOT/}"; done < <(grep -rnE "$STALE" "$SKILLS" "$AGENTS")
 fi
 # crew's references before the bp-/dom-/proc- prefixes (ADR 0017)
-OLD_REFS='references/(layering|api-rest|kafka|ws|conventions|iot|testfix|code-quality|security-review|architecture|java-spring|persistence|angular-patterns|node-bff|watch|sources)\.md'
+OLD_REFS='(technos/(java|java-spring|java-persistence|angular-patterns)|references/(layering|api-rest|kafka|ws|conventions|iot|testfix|code-quality|security-review|architecture|java-spring|persistence|angular-patterns|node-bff|watch|sources))\.md'
 if grep -rnE "$OLD_REFS" "$CREW" "$AGENTS" >/dev/null 2>&1; then
   while read -r hit; do fail "stale — ${hit#$ROOT/}"; done < <(grep -rnE "$OLD_REFS" "$CREW" "$AGENTS")
 fi

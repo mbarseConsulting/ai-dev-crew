@@ -1,47 +1,35 @@
 # testfix — classify and fix red tests
 
-> Chargé par `agents/agent-tester.md` en entier, et par `agents/agent-dev.md` pour la seule classification du Step 5 quand un test passe au rouge. **Règles** fait autorité.
->
-> Dernière passe de veille : —
+> Run by: `agents/agent-tester.md`. Last watch: 2026-09-14
 
-## Règles
+## Steps
 
-Execute the steps in order. Do not touch any file before Step 3's output is in hand.
-
-### What you MUST do
-
-1. **Detect the runner.** Build file or `package.json` scripts first, then config files, then dependencies as a last resort. If it can't be determined, stop and report the runner as unknown — never guess a command; whoever briefed the run supplies it.
+1. **Detect the runner** from the build file or `package.json` scripts, then config files, then dependencies. Unknown → stop and report; whoever briefed the run supplies the command.
 
    | Found | Runner | One file / test | Full suite |
    | --- | --- | --- | --- |
-   | `pom.xml` (prefer `./mvnw`) | Maven + JUnit | `mvn test -Dtest=OrderServiceTest` (`#method` for one test) | `mvn verify` if `pom.xml` declares `maven-failsafe-plugin`, else `mvn test` |
+   | `pom.xml` (prefer `./mvnw`) | Maven + JUnit | `mvn test -Dtest=OrderServiceTest` (`#method` for one test) | `mvn verify` if `maven-failsafe-plugin` is declared, else `mvn test` |
    | `build.gradle(.kts)` (prefer `./gradlew`) | Gradle + JUnit | `./gradlew test --tests 'com.acme.OrderServiceTest'` | `./gradlew test` |
    | `vitest.config.*` or `vitest` in scripts | Vitest | `npx vitest run <file> --reporter=verbose` | `npx vitest run` |
    | `jest.config.*` or `jest` in scripts | Jest | `npx jest <file> --verbose` | `npx jest` |
    | `cypress.config.*` | Cypress | `npx cypress run --spec <file>` | `npx cypress run` |
    | `playwright.config.*` | Playwright | `npx playwright test <file>` | `npx playwright test` |
-   | `pyproject.toml` / `pytest.ini` / `conftest.py` | pytest | `pytest <file>::<test> -v` (prefix `uv run` / `poetry run` per lockfile) | `pytest` |
+   | `pyproject.toml` / `pytest.ini` / `pytest.toml` / `.pytest.toml` / `conftest.py` | pytest | `pytest <file>::<test> -v` (`uv run` / `poetry run` per lockfile) | `pytest` |
 
-   An Angular project runs its fast tier through `package.json`'s `test` script (`ng test`); use that script rather than guessing the underlying runner.
+   An Angular project runs its fast tier through the `test` script (`ng test`), never a guessed runner.
+2. **Scope.** The most specific target wins: a named test, a test file, the tests of a named source file (`*.spec.ts` / `*.test.ts`, `*Test.java` / `*IT.java`, `test_*.py`), else the full suite.
+3. **Run and capture the entire output.** Nothing is touched before this exists. A compilation or type error is a source failure.
+4. **Parse each failure:** test name, file and line, exact message, the stack-trace lines pointing at non-test source. Zero failures → "All tests pass. Nothing to fix." and stop.
+5. **Classify and fix.** Source is wrong when the trace points at source, the error is a runtime exception, the value contradicts the logic the test states, or the code does not compile. The test is wrong when a snapshot changed intentionally, a mock lags an intentionally updated contract, or a hardcoded value was deliberately changed. Ambiguous → fix the source and say why. Surgical edits only.
+6. **Re-run the same command.** Green → done. Red and under 3 iterations → back to step 4. Red after 3 → stop and report.
 
-2. **Identify scope.** The most specific target wins: a named test method → that method; a test file → that file only. Only a source file was mentioned: find its tests by the stack's naming — `*.spec.ts` / `*.test.ts(x)`, `*Test.java` / `*IT.java` under `src/test/`, `test_*.py` / `*_test.py` — and run those. Nothing specific: run the full suite.
-3. **Run and capture.** Execute the command, capturing the **entire** output — no truncation. Compilation or type errors in the output are source errors (Step 5).
-4. **Parse the failures.** For each failing test, extract: test name; test file and line; exact error message; the stack-trace lines pointing to a non-test source file. Zero failures: output "All tests pass. Nothing to fix." and stop.
-5. **Classify and fix each failure:**
-   - **Fix the source if:** the stack trace points to a non-test source file; the error is a runtime exception (`TypeError`, `NullPointerException`, `AttributeError`…); the returned value doesn't match the logic the test validates; it is a compilation or type error in source code.
-   - **Fix the test if:** it is a snapshot mismatch and the content change was clearly intentional; a mock no longer matches an API contract that was intentionally updated; the test asserts a hardcoded value that was deliberately changed elsewhere.
-   - **When genuinely ambiguous**, fix the source and explain why. Edits are surgical — fix only what the captured output shows is broken.
-6. **Verify, looping.** Re-run the same command. All pass: report done. Still failing, under 3 total iterations: return to Step 4 with the new output. Still failing after 3: stop and report.
+## NEVER
 
-### What you NEVER do
-
-- Never touch a file before Step 3's captured output exists
-- Never widen or weaken an assertion to make a failing test pass (`assertEquals(5, x)` → `assertNotNull(x)`, `toBe(5)` → `toBeDefined()`)
-- Never modify a test to hide a genuine bug in the source
+- Never widen or weaken an assertion to pass (`toBe(5)` → `toBeDefined()`)
+- Never modify a test to hide a genuine source bug
 - Never disable a failing test (`@Disabled`, `.skip`, `@pytest.mark.skip`) to turn the run green
-- Never exceed 3 verify-loop iterations without stopping to report
-- Do NOT use these rules to write new tests for untested behavior — they fix already-written, already-failing tests; that is `--dev`, which writes tests alongside new code and designs missing scenarios
+- Never write tests for behavior that has none — that is development
 
 ## Output
 
-Conversational, not written to a file: runner and scope detected; the first run's captured output; per test, `name → file:line — what failed, source bug or stale test`; per file, what changed and why; the re-run output that verifies the fix. Still failing after 3 iterations: the remaining failing tests, what was tried, and the likely root cause, instead of a completion claim.
+Runner and scope; the first captured output; per test, `name → file:line — what failed, source bug or stale test`; per file, what changed and why; the re-run output. After 3 red iterations: what remains broken, what was tried, the likely root cause, never a completion claim.

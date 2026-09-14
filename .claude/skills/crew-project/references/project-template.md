@@ -1,24 +1,24 @@
-# <projet>
+# <project>
 
-**Domaine :** <ex : IoT — supervision de flotte>
-**Références de domaine :** <ex : iot>
+**Domain:** <e.g. IoT — fleet supervision>
+**Domain references:** <e.g. iot>
 
 ## Stack
 
-| Couche | Techno | Note |
+| Layer | Techno | Note |
 |---|---|---|
 | | | |
 
-## Conventions maison
+## House conventions
 
-> « Comment ça s'appelle ici », jamais « pourquoi ».
-> Vide = inconnu. Faux = décidé. Laisser vide plutôt que deviner. Remplir en lisant le code.
+> "What it is called here", never "why".
+> Empty = unknown. Wrong = decided. Leave empty rather than guess. Fill by reading the code.
 
-| Sujet | Ici |
+| Topic | Here |
 |---|---|
 | | |
 
-## Écarts assumés
+## Deliberate deviations
 
-| Règle générale | Ce qu'on fait ici | Pourquoi |
+| General rule | What we do here | Why |
 |---|---|---|

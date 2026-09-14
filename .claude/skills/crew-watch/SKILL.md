@@ -1,5 +1,5 @@
 ---
-name: watch
+name: crew-watch
 description: "Use when: (1) running a periodic tech-watch pass to keep the library's technology references from going stale, (2) checking whether a specific release or announcement invalidates an existing rule, (3) recording what changed in a technology the library already has rules about."
 ---
 

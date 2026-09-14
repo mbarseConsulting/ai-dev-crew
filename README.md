@@ -41,8 +41,8 @@ Cinq, indexées par **activité** — parce que l'activité est la seule chose q
 | `/crew-dev` | implémenter ou corriger du code | la boucle dev, la table de détection, 4 personas, 10 références |
 | `/crew-review` | faire passer un gate formel | la procédure de revue, lentilles qualité et sécurité |
 | `/crew-test` | un test est rouge, ou il faut vérifier indépendamment | critère de tier, scénarios, suite complète, testfix |
-| `/architecture` | une décision a de vrais arbitrages | discipline ADR, alternatives, réversibilité |
-| `/watch` | les références risquent de vieillir | diff doctrinal, digest, une PR par fichier impacté |
+| `/crew-architecture` | une décision a de vrais arbitrages | discipline ADR, alternatives, réversibilité |
+| `/crew-watch` | les références risquent de vieillir | diff doctrinal, digest, une PR par fichier impacté |
 
 La composition est un **graphe**, pas un arbre — quatre arêtes, aucune n'excluant les autres :
 
@@ -63,7 +63,7 @@ Une référence fusionnée porte deux sections : **`## Règles` fait autorité, 
 
 `house-rules.md` — les noms et choix propres à l'employeur — est **gitignoré**. Seul `docs/templates/house-rules.template.md` est committé.
 
-Et `/watch` entretient tout ça : une passe périodique qui ne retient d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest dans `docs/watch/`, et ouvre **une PR par fichier impacté** — jamais de commit direct, parce que relire la PR est à la fois le garde-fou et le moment où on apprend.
+Et `/crew-watch` entretient tout ça : une passe périodique qui ne retient d'une nouveauté que ce qui **rend une règle existante fausse ou incomplète**, écrit un digest dans `docs/watch/`, et ouvre **une PR par fichier impacté** — jamais de commit direct, parce que relire la PR est à la fois le garde-fou et le moment où on apprend.
 
 ## Les agents
 

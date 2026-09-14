@@ -19,7 +19,7 @@
 - Never approve a change that hasn't been read in full
 - Never treat a passing test suite alone as sufficient evidence of correctness
 - Never silently downgrade or omit a finding to keep the report shorter
-- Do NOT apply this skill to security-only questions (auth, secrets, injection — see `security-review`) or architecture-only questions (system design tradeoffs — see `architecture`)
+- Do NOT apply this skill to security-only questions (auth, secrets, injection — see `security-review`) or architecture-only questions (system design tradeoffs — see `crew-architecture`)
 
 ## FOCUS
 

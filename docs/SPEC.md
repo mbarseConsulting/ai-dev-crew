@@ -16,7 +16,7 @@ Four agents, one clear responsibility each. All domain, technology, and procedur
 
 - Entry point, running as the **main-session persona** in normal use — not a dispatched subagent. See [ADR 0007](./adr/0007-butler-topology-and-write-scope.md). Qualifies the user's need before dispatching anything. Not a shell (§ Doctrine, above) — its dispatch/gating behavior is genuinely agent-level, not extractable to a skill.
 - Dispatches `agent-crew-dev`, `agent-crew-tester`, and/or `agent-crew-critic` as subagents via its own `Agent` tool.
-- Holds architecture decisions directly with the user via the `architecture` skill — a real, iterative dialogue it conducts itself, never delegates — and writes the outcome to `docs/adr/` or `docs/design/` (`Write`, scoped to those two paths by behavioral rule; see ADR 0007).
+- Holds architecture decisions directly with the user via the `crew-architecture` skill — a real, iterative dialogue it conducts itself, never delegates — and writes the outcome to `docs/adr/` or `docs/design/` (`Write`, scoped to those two paths by behavioral rule; see ADR 0007).
 - Runs a light sanity check on work returned by `agent-crew-dev` (did tests actually run? was the ADR/design respected?) before handing off to `agent-crew-tester` and/or `agent-crew-critic` for the thorough passes.
 - **Boundary:** never implements code (no `Edit`); never performs independent test verification or the formal review itself. See [ADR 0003](./adr/0003-butler-critic-separation.md).
 
@@ -60,8 +60,8 @@ Tool allowlists are in §6, the file contract in §4, and the two consumption mo
 | `crew-dev` | implementing or fixing application code | the develop→compile→test→verify loop, the technology detection table, 4 personas, 10 references |
 | `crew-review` | a change must pass a formal gate | the review procedure; quality and security lenses as references |
 | `crew-test` | a test is red, or a change needs independent verification | the tier criterion, scenario design, full-suite verification, testfix |
-| `architecture` | a decision has real trade-offs and is expensive to reverse | ADR discipline, alternatives, reversibility |
-| `watch` | the library's references risk going stale | the doctrinal diff, the digest, one PR per impacted file |
+| `crew-architecture` | a decision has real trade-offs and is expensive to reverse | ADR discipline, alternatives, reversibility |
+| `crew-watch` | the library's references risk going stale | the doctrinal diff, the digest, one PR per impacted file |
 
 The top-level unit is the **activity**, not the knowledge domain — because the activity is the only thing known at the moment the skill is invoked by hand ([ADR 0014](./adr/0014-activity-first-skill-agent-pattern.md)). What technology a task touches, and what it crosses into, is discovered *during* the work, so it is routed, not typed.
 
@@ -71,7 +71,7 @@ Composition is a graph with four edges, none exclusive: a skill loads its own re
 
 A merged reference carries two sections: **`## Règles` is normative, `## Pourquoi` explains, and where they disagree `## Règles` is right** — the same asymmetry [ADR 0010](./adr/0010-watch-craft-maintenance-loop.md) established between files.
 
-`watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site.
+`crew-watch` is the only skill that maintains the library rather than serving client work; it is never pasted at a client site.
 
 `house-rules.md` — the employer's own names, packages and retained choices — is one **gitignored** file per skill, sectioned by domain; only `docs/templates/house-rules.template.md` is committed.
 
@@ -85,7 +85,7 @@ Outside agent-teams parallel review, agents don't talk to each other spontaneous
 
 | Path | Written by | Read by |
 | --- | --- | --- |
-| `docs/adr/` | `agent-crew-butler` (via the `architecture` skill; `Write` scoped to this path — [ADR 0007](./adr/0007-butler-topology-and-write-scope.md)) | `agent-crew-dev`, `agent-crew-critic` |
+| `docs/adr/` | `agent-crew-butler` (via the `crew-architecture` skill; `Write` scoped to this path — [ADR 0007](./adr/0007-butler-topology-and-write-scope.md)) | `agent-crew-dev`, `agent-crew-critic` |
 | `docs/design/` | `agent-crew-butler` (same scope) | `agent-crew-dev` |
 | `docs/reviews/` | `code-quality` (Quality section) + `security-review` (Security section) — whether loaded via `agent-crew-critic` or directly, solo | user, `agent-crew-butler` (relaying the verdict) |
 

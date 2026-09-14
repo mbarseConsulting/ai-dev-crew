@@ -28,7 +28,7 @@ A third pressure comes from [ADR 0012](./0012-claude-library-over-marketplace.md
 
 | Family | Skills |
 | --- | --- |
-| Procedure | `dev-loop` · `testfix` · `test-craft` · `code-quality` · `security-review` · `dev-conventions` · `architecture` |
+| Procedure | `dev-loop` · `testfix` · `test-craft` · `code-quality` · `security-review` · `dev-conventions` · `crew-architecture` |
 | Language / framework | `java-craft` · `angular-craft` · `node-bff-craft` · `python-craft` |
 | Structure | `layering-craft` · `persistence-craft` |
 | Contracts | `api-rest-craft` · `kafka-craft` · `ws-craft` |

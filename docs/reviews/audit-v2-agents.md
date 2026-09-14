@@ -14,8 +14,8 @@ Severity: **BLOCKING** (contract broken or guarantee false) · **SHOULD-FIX** (p
 
 `docs/SPEC.md:62-63`:
 
-> | `docs/adr/` | Written by `agent-crew-butler` (via the `architecture` skill) | ...
-> | `docs/design/` | Written by `agent-crew-butler` (via the `architecture` skill) | ...
+> | `docs/adr/` | Written by `agent-crew-butler` (via the `crew-architecture` skill) | ...
+> | `docs/design/` | Written by `agent-crew-butler` (via the `crew-architecture` skill) | ...
 
 But `agent-crew-butler.md:4` declares `tools: Read, Grep, Glob, Bash, Agent` — no `Write`, no `Edit`. ADR 0004 (`0004-role-tool-allowlists.md:11`) states this is deliberate: "no `Write`/`Edit`, so it can't implement code even if instructed to." The same restriction makes the butler unable to record the ADRs and design notes it is contractually the sole writer of. The only escape is `Bash` heredocs — which defeats the entire point of ADR 0004 (see B2).
 
@@ -67,7 +67,7 @@ ADRs 0001, 0002, 0005, 0006: sound, internally consistent, honestly argued. No f
 
 ### B3 — BLOCKING — OUTPUT promises what the tools forbid
 
-Line 50: "an architecture dialogue conducted directly with the user (never delegated), **with the decision recorded via the `architecture` skill**". No `Write` tool (line 4). The agent's own OUTPUT contract is unfulfillable without the Bash bypass. Same root cause as B1; fixed by the same decision.
+Line 50: "an architecture dialogue conducted directly with the user (never delegated), **with the decision recorded via the `crew-architecture` skill**". No `Write` tool (line 4). The agent's own OUTPUT contract is unfulfillable without the Bash bypass. Same root cause as B1; fixed by the same decision.
 
 ### S4 — SHOULD-FIX — Core behaviors assume an interaction channel the agent may not have
 
@@ -129,7 +129,7 @@ Same Bash caveat as B2 — `sed -i` is in reach. Inherits ADR 0004's fix (behavi
 
 House template (OPTIONS/BEHAVIOR/OUTPUT), "Use when:" trigger-only descriptions, name-only cross-references, English, small word counts: all seven comply with SPEC §3 and current skill-writing practice. Real "Do NOT apply" clauses everywhere — none decorative. Findings below are the exceptions.
 
-### 6.1 `architecture` (crew-core)
+### 6.1 `crew-architecture` (crew-core)
 
 **B4 — BLOCKING (contract)** — The skill that anchors the file contract never names the destination path. SPEC §4 routes `docs/adr/` and `docs/design/` through this skill, but its MUST (line 17: "Record significant decisions as a short ADR") and OUTPUT (line 35) never say *where*. Combined with B1/B3, the dialogue → `docs/adr/` → dev loop is open at both ends: no tool to write, no path to write to. **Fix:** add to MUST: "Record ADRs under the host project's `docs/adr/` (create the directory if missing), one file per decision, kebab-case slug."
 

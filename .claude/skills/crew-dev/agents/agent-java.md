@@ -19,7 +19,7 @@ Shared references are declared by `crew-dev`. These are this persona's own — l
 - `references/kafka.md`
 - `references/ws.md`
 
-May also call another skill by name when the work crosses into it — `crew-test`, `architecture`.
+May also call another skill by name when the work crosses into it — `crew-test`, `crew-architecture`.
 
 ## OPTIONS
 

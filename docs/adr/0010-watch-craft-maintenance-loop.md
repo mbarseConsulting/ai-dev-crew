@@ -25,7 +25,7 @@ Searching the web at usage time is not the answer — too slow, too costly, and 
 
 Operationally this is checkable: a MUST or NEVER appearing only in `best-practices.md` is a defect, and either belongs in `SKILL.md` or is not a rule.
 
-**2. A `watch` skill carries the whole procedure.** Skills-first like the rest of the crew; an agent shell is optional, and a human can run the skill by hand.
+**2. A `crew-watch` skill carries the whole procedure.** Skills-first like the rest of the crew; an agent shell is optional, and a human can run the skill by hand.
 
 1. **Scope** — the technologies of the installed craft skills, plus cross-cutting conventions. No general "AI is moving" watch: only findings able to change an existing rule.
 2. **Collection** — per-technology sources declared inside the skill (release notes, reference guides). No open crawling; cost is bounded per run.
@@ -34,14 +34,14 @@ Operationally this is checkable: a MUST or NEVER appearing only in `best-practic
    - it changes what is forbidden or required → a PR on `SKILL.md`, and on `best-practices.md` for the reasoning;
    - it only deepens the reasoning, the rule standing → `best-practices.md` alone;
    - it affects neither → the digest alone.
-5. **Dual output** — `docs/watch/YYYY-MM-DD.md`, a short sourced digest; and **one PR per impacted craft skill**, never a direct commit. Reviewing the PR *is* the learning moment, and the gate that stops a hallucinated finding from corrupting the references.
+5. **Dual output** — `docs/watch/YYYY-MM-DD.md`, a short sourced digest; and **one PR per impacted persona or reference**, never a direct commit. Reviewing the PR *is* the learning moment, and the gate that stops a hallucinated finding from corrupting the references.
 6. **Evidence rule** — no rule change without a cited source in the PR. An uncited craft-skill change is rejectable on sight.
 
 **3. Source-list liveness.** Watch quality is bounded by the declared source list, which lives inside the skill, versioned. Each digest ends with a "sources silent this run" line; three consecutive silent runs for one source is the signal to revise it.
 
 **4. `house-rules.md` is out of scope.** Those files are maintained by reading the employer's codebase, not by veille. No watch run ever touches them — which is consistent with their being gitignored.
 
-**5. Trigger and cost.** Manual first (`/watch`), weekly as a target. Unattended scheduling belongs to ADR 0011, because "when does it run on its own" is the quota question that ADR arbitrates. The run is a maintenance task on the library itself, so it happens where Claude Code and model choice exist — [ADR 0009](./0009-model-routing.md)'s routing applies, and Sonnet fits: research and synthesis, no architectural arbitration.
+**5. Trigger and cost.** Manual first (`/crew-watch`), weekly as a target. Unattended scheduling belongs to ADR 0011, because "when does it run on its own" is the quota question that ADR arbitrates. The run is a maintenance task on the library itself, so it happens where Claude Code and model choice exist — [ADR 0009](./0009-model-routing.md)'s routing applies, and Sonnet fits: research and synthesis, no architectural arbitration.
 
 ## Alternatives considered
 
@@ -52,6 +52,6 @@ Operationally this is checkable: a MUST or NEVER appearing only in `best-practic
 ## Consequences
 
 - The veille date and `## Sources` section already present in every `best-practices.md` become machinery rather than decoration: the first is what makes staleness visible, the second is what a run reads and reports on.
-- `watch` lives in `.claude/skills/watch/`, alongside the skills it maintains. Post-[ADR 0012](./0012-claude-library-over-marketplace.md) there is nothing to ship, so the design's "repo-local, not shipped" placement is now simply the only option; the substance survives — watch is a maintenance skill for the library, never one pasted at a client site.
+- `crew-watch` lives in `.claude/skills/crew-watch/`, alongside the skills it maintains. Post-[ADR 0012](./0012-claude-library-over-marketplace.md) there is nothing to ship, so the design's "repo-local, not shipped" placement is now simply the only option; the substance survives — watch is a maintenance skill for the library, never one pasted at a client site.
 - ADR 0011 gains a prerequisite: unattended self-improvement has no value until there is something worth running unattended, and this loop is it.
 - A craft skill with no declared sources cannot be watched. That is an accepted, visible gap rather than a silent one — `angular-craft`'s `best-practices.md` is empty today, so it has nothing to maintain and will show up as such.

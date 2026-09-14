@@ -14,7 +14,7 @@
 
 ## Decision
 
-**1. The top-level unit is the activity.** Five skills: `crew-dev`, `crew-review`, `crew-test`, `architecture`, `watch`. Each is something the operator decides to do.
+**1. The top-level unit is the activity.** Five skills: `crew-dev`, `crew-review`, `crew-test`, `crew-architecture`, `crew-watch`. Each is something the operator decides to do.
 
 **2. Composition is a graph, not a tree.** Four edges, none exclusive of the others:
 

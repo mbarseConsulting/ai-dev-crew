@@ -1,5 +1,5 @@
 ---
-name: architecture
+name: crew-architecture
 description: "Use when: (1) choosing between two or more technical approaches with real tradeoffs, (2) a decision will be expensive to reverse later, (3) a change affects system boundaries or repo/module layout rather than a single file."
 ---
 

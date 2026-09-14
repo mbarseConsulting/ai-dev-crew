@@ -36,7 +36,7 @@
 
 **Problem.** Searching the web for best practices at usage time is too costly, but a parallel `best-practices.md` would create a second home for rules that already live in `angular-craft` / `java-craft` / `python-craft` / `dev-conventions`, violating ADR 0008. The premise's §4 (local best-practices reference) and §8 (tech-watch agent) are one feature: the **update process** for the craft skills.
 
-**Shape.** Skills-first, like the rest of the crew: a `watch` skill carries the whole procedure; an agent shell is optional (a human can run the skill by hand in solo mode).
+**Shape.** Skills-first, like the rest of the crew: a `crew-watch` skill carries the whole procedure; an agent shell is optional (a human can run the skill by hand in solo mode).
 
 **Procedure carried by the skill:**
 
@@ -50,9 +50,9 @@
 
 **Source-list liveness.** Watch quality is bounded by the declared source list. The list lives *inside* the skill, versioned. Each digest ends with a "sources silent this run" line; three consecutive silent runs for a source = signal to revise the list.
 
-**Placement.** Repo-local in ai-dev-crew (`.claude/skills/watch` + optional agent shell), **not** a shipped plugin: clients consume up-to-date craft skills, they do not maintain them. Shipping watch later is a separate product decision, not a default.
+**Placement.** Repo-local in ai-dev-crew (`.claude/skills/crew-watch` + optional agent shell), **not** a shipped plugin: clients consume up-to-date craft skills, they do not maintain them. Shipping watch later is a separate product decision, not a default.
 
-**Trigger.** Manual first (`/watch`); weekly cadence as target. Automated scheduling is **out of this ADR** — it belongs to ADR 0011, because "when does it run unattended" is exactly the quota question 0011 arbitrates. Model: Sonnet (research + synthesis, no architecture arbitration).
+**Trigger.** Manual first (`/crew-watch`); weekly cadence as target. Automated scheduling is **out of this ADR** — it belongs to ADR 0011, because "when does it run unattended" is exactly the quota question 0011 arbitrates. Model: Sonnet (research + synthesis, no architecture arbitration).
 
 ---
 
@@ -77,7 +77,7 @@
 ## Implementation order
 
 1. ADR 0009 + SPEC routing section + butler dispatch-brief updates.
-2. ADR 0010 + `watch` skill + optional shell agent.
+2. ADR 0010 + `crew-watch` skill + optional shell agent.
 3. ADR 0011 + backlog file convention + `crew.sh` self-improvement entry point.
 
 Each step is independently shippable; each later step depends on the earlier ones.

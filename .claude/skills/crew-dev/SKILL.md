@@ -45,7 +45,7 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 - Never claim a task is done, or that tests pass, without the executed output attached
 - Never treat Step 8 as a substitute for the formal review
 - Never modify an API contract or a database schema unilaterally — flag it and stop
-- Do NOT apply this skill to fixing an already-failing test with no feature work involved (`crew-test`), to reviewing a change (`crew-review`), or to a design decision with real trade-offs (`architecture`)
+- Do NOT apply this skill to fixing an already-failing test with no feature work involved (`crew-test`), to reviewing a change (`crew-review`), or to a design decision with real trade-offs (`crew-architecture`)
 
 ## SUPPORTING FILES
 
@@ -69,7 +69,7 @@ Execute in order. Do not write code before Step 1's output exists. Do not skip s
 | A producer, a consumer, a topic, an event payload | `references/kafka.md` |
 | A socket handler, a message envelope, reconnection | `references/ws.md` |
 
-The persona declares its own further references. Personas and references may also call another skill by name — `crew-test`, `crew-review`, `architecture`.
+The persona declares its own further references. Personas and references may also call another skill by name — `crew-test`, `crew-review`, `crew-architecture`.
 
 ## OUTPUT
 
